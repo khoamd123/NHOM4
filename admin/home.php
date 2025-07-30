@@ -42,6 +42,7 @@ function timeAgo($datetime) {
 ?>
 <link rel="stylesheet" href="/NHOM4_DU_AN_1/assets/css/Administrator.css">
 <link rel="stylesheet" href="/NHOM4_DU_AN_1/vendor/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
       <aside class="sidebar">
         <div class="sidebar-header">
           <div class="logo">
@@ -87,16 +88,10 @@ function timeAgo($datetime) {
     </li>
 </ul>
         <div class="sidebar-footer">
-          <div class="user-profile">
-            <div class="avatar">
-              <img src="https://via.placeholder.com/40" alt="User" />
-            </div>
-            <div class="user-info">
-              <span class="user-name"><?= $currentAdmin['name'] ?></span>
-              <span class="user-role">Admin</span>
-            </div>
-            <a href="logout.php" class="logout-link" title="Đăng xuất">
-              <i class="fas fa-sign-out-alt logout-icon"></i>
+          <div class="logout-section">
+            <a href="/NHOM4_DU_AN_1/admin/logout.php" class="logout-button">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Đăng xuất</span>
             </a>
           </div>
         </div>

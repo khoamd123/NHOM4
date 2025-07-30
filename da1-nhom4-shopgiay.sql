@@ -416,6 +416,84 @@ ALTER TABLE `reviews`
 --
 ALTER TABLE `variant_attributes`
   ADD CONSTRAINT `variant_attributes_ibfk_1` FOREIGN KEY (`variant_id`) REFERENCES `product_variants` (`id`) ON DELETE CASCADE;
+
+--
+-- Dữ liệu mẫu cho bảng `users`
+--
+
+INSERT INTO `users` (`name`, `email`, `password`, `phone`, `role`, `status`, `created_at`) VALUES
+('Admin', 'admin@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '0123456789', 1, 1, NOW()),
+('User Test', 'user@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '0987654321', 0, 1, NOW()),
+('Manager', 'manager@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '0111222333', 1, 1, NOW()),
+('Nguyễn Văn A', 'nguyenvana@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '0901234567', 0, 1, NOW()),
+('Trần Thị B', 'tranthib@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '0912345678', 0, 1, NOW()),
+('Lê Văn C', 'levanc@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '0923456789', 0, 1, NOW());
+
+--
+-- Dữ liệu mẫu cho bảng `categories`
+--
+
+INSERT INTO `categories` (`name`, `slug`) VALUES
+('Giày thể thao', 'giay-the-thao'),
+('Giày công sở', 'giay-cong-so'),
+('Giày búp bê', 'giay-bup-be'),
+('Giày lười', 'giay-luoi'),
+('Giày cao gót', 'giay-cao-got');
+
+--
+-- Dữ liệu mẫu cho bảng `products`
+--
+
+INSERT INTO `products` (`name`, `slug`, `description`, `price`, `image`, `created_at`) VALUES
+('Nike Air Max 270', 'nike-air-max-270', 'Giày thể thao Nike Air Max 270 với công nghệ Air Max đỉnh cao', 2500000, 'nike-air-max-270.jpg', NOW()),
+('Adidas Ultraboost 21', 'adidas-ultraboost-21', 'Giày chạy bộ Adidas Ultraboost 21 với đế Boost', 3200000, 'adidas-ultraboost-21.jpg', NOW()),
+('Giày công sở nam', 'giay-cong-so-nam', 'Giày công sở nam da thật, phong cách lịch lãm', 1800000, 'giay-cong-so-nam.jpg', NOW()),
+('Giày búp bê nữ', 'giay-bup-be-nu', 'Giày búp bê nữ thời trang, dễ phối đồ', 1200000, 'giay-bup-be-nu.jpg', NOW()),
+('Giày lười nam', 'giay-luoi-nam', 'Giày lười nam thoải mái, phù hợp mọi dịp', 800000, 'giay-luoi-nam.jpg', NOW()),
+('Giày cao gót nữ', 'giay-cao-got-nu', 'Giày cao gót nữ thanh lịch, tôn dáng', 1500000, 'giay-cao-got-nu.jpg', NOW());
+
+--
+-- Dữ liệu mẫu cho bảng `product_variants`
+--
+
+INSERT INTO `product_variants` (`product_id`, `size`, `color`, `stock`, `price`) VALUES
+(1, '40', 'Đen', 10, 2500000),
+(1, '41', 'Đen', 15, 2500000),
+(1, '42', 'Đen', 8, 2500000),
+(2, '39', 'Trắng', 12, 3200000),
+(2, '40', 'Trắng', 18, 3200000),
+(3, '41', 'Nâu', 20, 1800000),
+(3, '42', 'Nâu', 15, 1800000),
+(4, '36', 'Đen', 25, 1200000),
+(4, '37', 'Đen', 30, 1200000),
+(5, '40', 'Xanh', 22, 800000),
+(5, '41', 'Xanh', 18, 800000),
+(6, '36', 'Đỏ', 15, 1500000),
+(6, '37', 'Đỏ', 20, 1500000);
+
+--
+-- Dữ liệu mẫu cho bảng `orders`
+--
+
+INSERT INTO `orders` (`user_id`, `total_amount`, `shipping_fee`, `status`, `is_paid`, `created_at`) VALUES
+(4, 4300000, 30000, 'delivered', 1, '2024-01-15 10:30:00'),
+(5, 1800000, 30000, 'processing', 1, '2024-01-16 14:20:00'),
+(6, 3200000, 30000, 'shipped', 1, '2024-01-17 09:15:00'),
+(4, 1200000, 30000, 'pending', 0, '2024-01-18 16:45:00'),
+(5, 800000, 30000, 'cancelled', 0, '2024-01-19 11:30:00');
+
+--
+-- Dữ liệu mẫu cho bảng `order_items`
+--
+
+INSERT INTO `order_items` (`order_id`, `variant_id`, `quantity`, `price`) VALUES
+(1, 1, 1, 2500000),
+(1, 4, 1, 1800000),
+(2, 6, 1, 1800000),
+(3, 4, 1, 3200000),
+(4, 8, 1, 1200000),
+(5, 10, 1, 800000);
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

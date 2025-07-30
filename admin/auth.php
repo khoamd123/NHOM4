@@ -1,11 +1,24 @@
 <?php
 session_start();
 
+// Load database connection
+require_once __DIR__ . '/models/db.php';
+
 // Kiểm tra đăng nhập admin
 function checkAdminAuth() {
     if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
         header("Location: login.php");
         exit;
+    }
+    
+    // Kiểm tra trạng thái tài khoản từ database
+    if (isset($_SESSION['admin_id'])) {
+        require_once __DIR__ . '/models/userModel.php';
+        $status = getUserStatus($_SESSION['admin_id']);
+        if ($status === 0) {
+            // Tài khoản bị khóa, đăng xuất
+            adminLogout();
+        }
     }
 }
 

@@ -21,14 +21,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($user && password_verify($password, $user['password'])) {
-            // Đăng nhập thành công
-            $_SESSION['admin_logged_in'] = true;
-            $_SESSION['admin_id'] = $user['id'];
-            $_SESSION['admin_name'] = $user['name'];
-            $_SESSION['admin_email'] = $user['email'];
-            
-            header("Location: home.php");
-            exit;
+            // Kiểm tra trạng thái tài khoản
+            if ($user['status'] == 0) {
+                $error = 'Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên!';
+            } else {
+                // Đăng nhập thành công
+                $_SESSION['admin_logged_in'] = true;
+                $_SESSION['admin_id'] = $user['id'];
+                $_SESSION['admin_name'] = $user['name'];
+                $_SESSION['admin_email'] = $user['email'];
+                
+                header("Location: home.php");
+                exit;
+            }
         } else {
             $error = 'Email hoặc mật khẩu không đúng!';
         }

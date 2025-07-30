@@ -16,6 +16,20 @@ if (isset($_POST['add'])) {
     exit;
 }
 
+// Xử lý cập nhật danh mục
+if (isset($_POST['update'])) {
+    $id = $_POST['id'];
+    $name = $_POST['name'];
+    $slug = $_POST['slug'];
+    
+    if (updateCategory($id, $name, $slug)) {
+        header("Location: /NHOM4_DU_AN_1/admin/index.php?action=categories&success=2");
+    } else {
+        header("Location: /NHOM4_DU_AN_1/admin/index.php?action=categories&error=2");
+    }
+    exit;
+}
+
 // Xử lý xóa danh mục
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
