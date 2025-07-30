@@ -1,12 +1,18 @@
 <?php
-require_once '../models/categoryModel.php';
+require_once __DIR__ . '/../auth.php';
+checkAdminAuth();
+require_once __DIR__ . '/../models/categoryModel.php';
 
 // Xử lý thêm danh mục
 if (isset($_POST['add'])) {
     $name = $_POST['name'];
     $slug = $_POST['slug'];
-    addCategory($name, $slug);
-    header("Location: categoryController.php");
+    
+    if (addCategory($name, $slug)) {
+        header("Location: /NHOM4_DU_AN_1/admin/index.php?action=categories&success=1");
+    } else {
+        header("Location: /NHOM4_DU_AN_1/admin/index.php?action=categories&error=1");
+    }
     exit;
 }
 
@@ -14,11 +20,11 @@ if (isset($_POST['add'])) {
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
     deleteCategory($id);
-    header("Location: categoryController.php");
+    header("Location: /NHOM4_DU_AN_1/admin/index.php?action=categories");
     exit;
 }
 
 // Lấy danh sách danh mục
 $categories = getAllCategories();
-include '../views/categories/list.php';
+include __DIR__ . '/../views/categories/list.php';
 ?>

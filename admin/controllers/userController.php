@@ -1,5 +1,7 @@
 <?php
-require_once '../models/userModel.php';
+require_once __DIR__ . '/../auth.php';
+checkAdminAuth();
+require_once __DIR__ . '/../models/userModel.php';
 
 // Xử lý thêm tài khoản
 if (isset($_POST['add'])) {
@@ -8,8 +10,12 @@ if (isset($_POST['add'])) {
     $password = $_POST['password'];
     $phone = $_POST['phone'];
     $role = $_POST['role'];
-    addUser($name, $email, $password, $phone, $role);
-    header("Location: userController.php");
+    
+    if (addUser($name, $email, $password, $phone, $role)) {
+        header("Location: /NHOM4_DU_AN_1/admin/index.php?action=users&success=1");
+    } else {
+        header("Location: /NHOM4_DU_AN_1/admin/index.php?action=users&error=1");
+    }
     exit;
 }
 
@@ -17,11 +23,11 @@ if (isset($_POST['add'])) {
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
     deleteUser($id);
-    header("Location: userController.php");
+    header("Location: /NHOM4_DU_AN_1/admin/index.php?action=users");
     exit;
 }
 
 // Lấy danh sách tài khoản
 $users = getAllUsers();
-include '../views/users/list.php';
+include __DIR__ . '/../views/users/list.php';
 ?>

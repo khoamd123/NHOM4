@@ -1,11 +1,16 @@
 <?php
-require_once 'db.php';
+require_once __DIR__ . '/db.php';
 
 // Lấy tất cả danh mục
 function getAllCategories() {
     global $conn;
-    $stmt = $conn->query("SELECT * FROM categories");
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    try {
+        $stmt = $conn->query("SELECT * FROM categories ORDER BY id DESC");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error getting categories: " . $e->getMessage());
+        return [];
+    }
 }
 
 // Thêm danh mục mới

@@ -7,7 +7,27 @@
 </head>
 <body>
     <div class="container mt-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/NHOM4_DU_AN_1/admin/index.php">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Quản lý tài khoản</li>
+            </ol>
+        </nav>
         <h2 class="mb-4 text-primary">Quản lý tài khoản</h2>
+        
+        <?php if (isset($_GET['success'])): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>Thành công!</strong> Thao tác đã được thực hiện.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+        
+        <?php if (isset($_GET['error'])): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Lỗi!</strong> Có lỗi xảy ra khi thực hiện thao tác.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
         <form method="post" action="" class="row g-3 mb-4">
             <div class="col-md-2">
                 <input type="text" name="name" class="form-control" placeholder="Tên" required>
@@ -59,7 +79,10 @@
                 <?php endforeach; ?>
             </tbody>
         </table>
-        <a href="../home.php" class="btn btn-secondary mt-3">Quay lại trang chủ admin</a>
+        <a href="/NHOM4_DU_AN_1/admin/index.php" class="btn btn-secondary mt-3">Quay lại Dashboard</a>
     </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="/NHOM4_DU_AN_1/vendor/bootstrap/js/bootstrap.min.js"></script>
 </body>
 </html>

@@ -13,7 +13,7 @@
                       <li><a href="/NHOM4_DU_AN_1/index.php">Home</a></li>
                       <li><a href="/NHOM4_DU_AN_1/index.php?page=shop">Our Shop</a></li>
                       <li><a href="/NHOM4_DU_AN_1/index.php?page=lienhe">Contact Us</a></li>
-                      <li><a href="#">Sign In</a></li>
+                      <li><a href="/NHOM4_DU_AN_1/admin/login.php">Admin Login</a></li>
                   </ul>   
                     <a class='menu-trigger'>
                         <span>Menu</span>
