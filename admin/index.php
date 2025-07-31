@@ -27,8 +27,8 @@ switch ($action) {
         break;
         
     case 'products':
-        // Quản lý sản phẩm (chưa implement)
-        echo '<div class="container mt-5"><h2>Quản lý sản phẩm</h2><p>Chức năng đang phát triển...</p></div>';
+        // Quản lý sản phẩm
+        include __DIR__ . '/controllers/productController.php';
         break;
         
     case 'orders':

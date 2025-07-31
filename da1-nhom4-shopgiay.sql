@@ -120,6 +120,7 @@ CREATE TABLE `products` (
   `price` decimal(10,2) DEFAULT NULL,
   `brand` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `gender` enum('men','women','unisex') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` tinyint DEFAULT '1',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -146,7 +147,8 @@ CREATE TABLE `product_variants` (
   `product_id` int DEFAULT NULL,
   `size` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `color` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `stock` int DEFAULT NULL
+  `stock` int DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
