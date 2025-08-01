@@ -4,16 +4,16 @@
             <div class="col-12">
                 <nav class="main-nav">
                     <!-- ***** Logo Start ***** -->
-                    <a href="index.html" class="logo">
-                        <img src="assets/images/logo.png" alt="" style="width: 158px;">
+                    <a href="/NHOM4_DU_AN_1/index.php" class="logo">
+                        <span style="font-size: 24px; font-weight: bold; color: #e75e8d;">SHOE SHOP</span>
                     </a>
                     <!-- ***** Logo End ***** -->
                     <!-- ***** Menu Start ***** -->
                     <ul class="nav">
-                      <li><a href="/NHOM4_DU_AN_1/index.php">Home</a></li>
-                      <li><a href="/NHOM4_DU_AN_1/index.php?page=shop">Our Shop</a></li>
-                      <li><a href="/NHOM4_DU_AN_1/index.php?page=lienhe">Contact Us</a></li>
-                      <li><a href="/NHOM4_DU_AN_1/admin/login.php">Admin Login</a></li>
+                      <li><a href="/NHOM4_DU_AN_1/index.php">Trang chủ</a></li>
+                      <li><a href="/NHOM4_DU_AN_1/index.php?page=shop">Cửa hàng</a></li>
+                      <li><a href="/NHOM4_DU_AN_1/index.php?page=lienhe">Liên hệ</a></li>
+                      <li><a href="/NHOM4_DU_AN_1/admin/login.php">Admin</a></li>
                   </ul>   
                     <a class='menu-trigger'>
                         <span>Menu</span>
