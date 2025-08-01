@@ -8,10 +8,10 @@
     <!-- Bootstrap core CSS -->
     <link href="/NHOM4_DU_AN_1/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <!-- Additional CSS Files -->
-    <link rel="stylesheet" href="/NHOM4_DU_AN_1/assets/css/fontawesome.css">
-    <link rel="stylesheet" href="/NHOM4_DU_AN_1/assets/css/templatemo-lugx-gaming.css">
-    <link rel="stylesheet" href="/NHOM4_DU_AN_1/assets/css/owl.css">
-    <link rel="stylesheet" href="/NHOM4_DU_AN_1/assets/css/animate.css">
+    <link rel="stylesheet" href="/NHOM4_DU_AN_1/public/assets/css/fontawesome.css">
+    <link rel="stylesheet" href="/NHOM4_DU_AN_1/public/assets/css/templatemo-lugx-gaming.css">
+    <link rel="stylesheet" href="/NHOM4_DU_AN_1/public/assets/css/owl.css">
+    <link rel="stylesheet" href="/NHOM4_DU_AN_1/public/assets/css/animate.css">
     
 </head>
 <body>

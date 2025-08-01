@@ -32,7 +32,7 @@
       <div class="col-lg-3 col-md-6 align-self-center mb-30 trending-items col-md-6 adv">
         <div class="item">
           <div class="thumb">
-            <a href="/NHOM4_DU_AN_1/product-details.html"><img src="/NHOM4_DU_AN_1/assets/images/trending-01.jpg" alt=""></a>
+                            <a href="/NHOM4_DU_AN_1/product-details.html"><img src="/NHOM4_DU_AN_1/public/assets/images/trending-01.jpg" alt=""></a>
             <span class="price"><em>$36</em>$24</span>
           </div>
           <div class="down-content">

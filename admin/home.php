@@ -40,7 +40,7 @@ function timeAgo($datetime) {
     }
 }
 ?>
-<link rel="stylesheet" href="/NHOM4_DU_AN_1/assets/css/Administrator.css">
+    <link rel="stylesheet" href="/NHOM4_DU_AN_1/public/assets/css/Administrator.css">
 <link rel="stylesheet" href="/NHOM4_DU_AN_1/vendor/bootstrap/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
       <aside class="sidebar">

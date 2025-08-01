@@ -5,7 +5,7 @@
           <a href="#">
             <div class="item">
               <div class="image">
-                <img src="assets/images/featured-01.png" alt="" style="max-width: 44px;">
+                <img src="public/assets/images/featured-01.png" alt="" style="max-width: 44px;">
               </div>
               <h4>Free Storage</h4>
             </div>
@@ -15,7 +15,7 @@
           <a href="#">
             <div class="item">
               <div class="image">
-                <img src="assets/images/featured-02.png" alt="" style="max-width: 44px;">
+                <img src="public/assets/images/featured-02.png" alt="" style="max-width: 44px;">
               </div>
               <h4>User More</h4>
             </div>
@@ -25,7 +25,7 @@
           <a href="#">
             <div class="item">
               <div class="image">
-                <img src="assets/images/featured-03.png" alt="" style="max-width: 44px;">
+                <img src="public/assets/images/featured-03.png" alt="" style="max-width: 44px;">
               </div>
               <h4>Reply Ready</h4>
             </div>
@@ -35,7 +35,7 @@
           <a href="#">
             <div class="item">
               <div class="image">
-                <img src="assets/images/featured-04.png" alt="" style="max-width: 44px;">
+                <img src="public/assets/images/featured-04.png" alt="" style="max-width: 44px;">
               </div>
               <h4>Easy Layout</h4>
             </div>

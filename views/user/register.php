@@ -1,53 +1,8 @@
-<?php
-session_start();
-require_once 'models/db.php';
-
-// Nếu đã đăng nhập thì chuyển về trang chủ admin
-if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
-    header("Location: home.php");
-    exit;
-}
-
-$error = '';
-
-// Xử lý đăng nhập
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    
-    try {
-        $stmt = $conn->prepare("SELECT * FROM users WHERE email = ? AND role = 1");
-        $stmt->execute([$email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if ($user && password_verify($password, $user['password'])) {
-            // Kiểm tra trạng thái tài khoản
-            if ($user['status'] == 0) {
-                $error = 'Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên!';
-            } else {
-                // Đăng nhập thành công
-                $_SESSION['admin_logged_in'] = true;
-                $_SESSION['admin_id'] = $user['id'];
-                $_SESSION['admin_name'] = $user['name'];
-                $_SESSION['admin_email'] = $user['email'];
-                
-                header("Location: home.php");
-                exit;
-            }
-        } else {
-            $error = 'Email hoặc mật khẩu không đúng!';
-        }
-    } catch (PDOException $e) {
-        $error = 'Lỗi đăng nhập: ' . $e->getMessage();
-    }
-}
-?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Đăng nhập Admin</title>
-    <link rel="stylesheet" href="/NHOM4_DU_AN_1/public/assets/css/Administrator.css">
+    <title>Đăng ký tài khoản</title>
     <link rel="stylesheet" href="/NHOM4_DU_AN_1/vendor/bootstrap/css/bootstrap.min.css">
     <style>
         body {
@@ -99,31 +54,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="login-container">
         <div class="login-header">
-            <h2>🔐 Admin Login</h2>
-            <p class="text-muted">Đăng nhập vào hệ thống quản trị</p>
+            <h2>📝 Đăng ký</h2>
+            <p class="text-muted">Tạo tài khoản mới để sử dụng dịch vụ</p>
         </div>
-        
-        <?php if ($error): ?>
+        <?php if (!empty($success)): ?>
+            <div class="alert alert-success"><?= $success ?></div>
+        <?php endif; ?>
+        <?php if (!empty($error)): ?>
             <div class="alert alert-danger"><?= $error ?></div>
         <?php endif; ?>
-        
-        <form method="post" action="">
+        <form method="POST" action="?controller=user&action=register">
+            <div class="mb-3">
+                <label for="name" class="form-label">Họ tên</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" id="email" name="email" required>
             </div>
-            
             <div class="mb-3">
                 <label for="password" class="form-label">Mật khẩu</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
-            
-            <button type="submit" class="btn btn-login">Đăng nhập</button>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Số điện thoại</label>
+                <input type="text" class="form-control" id="phone" name="phone" required>
+            </div>
+            <button type="submit" class="btn btn-login">Đăng ký</button>
         </form>
-        
         <div class="text-center mt-3">
-            <a href="/NHOM4_DU_AN_1/index.php" class="text-decoration-none">← Quay về trang chủ</a>
+            <a href="/NHOM4_DU_AN_1/client/index.php?controller=user&action=login" class="text-decoration-none">← Đã có tài khoản? Đăng nhập</a>
         </div>
     </div>
 </body>
-</html> 
+</html>
