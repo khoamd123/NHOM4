@@ -112,6 +112,7 @@ $currentAdmin = getCurrentAdmin();
                     switch($_GET['success']) {
                         case '1': echo 'Danh mục đã được thêm thành công.'; break;
                         case '2': echo 'Danh mục đã được cập nhật thành công.'; break;
+                        case '3': echo 'Danh mục đã được xóa thành công.'; break;
                         default: echo 'Thao tác đã được thực hiện thành công.';
                     }
                     ?>
@@ -126,6 +127,7 @@ $currentAdmin = getCurrentAdmin();
                     switch($_GET['error']) {
                         case '1': echo 'Có lỗi xảy ra khi thêm danh mục.'; break;
                         case '2': echo 'Có lỗi xảy ra khi cập nhật danh mục.'; break;
+                        case '3': echo 'Có lỗi xảy ra khi xóa danh mục. Có thể danh mục đang được sử dụng bởi sản phẩm. Vui lòng kiểm tra liên kết sản phẩm trước khi xóa.'; break;
                         default: echo 'Có lỗi xảy ra khi thực hiện thao tác.';
                     }
                     ?>

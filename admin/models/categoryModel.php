@@ -48,7 +48,49 @@ function updateCategory($id, $name, $slug) {
 // Xóa danh mục
 function deleteCategory($id) {
     global $conn;
-    $stmt = $conn->prepare("DELETE FROM categories WHERE id = ?");
-    return $stmt->execute([$id]);
+    try {
+        // Kiểm tra xem danh mục có tồn tại không
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM categories WHERE id = ?");
+        $stmt->execute([$id]);
+        if ($stmt->fetchColumn() == 0) {
+            error_log("Category with ID $id does not exist");
+            return false;
+        }
+        
+        // Kiểm tra xem có sản phẩm nào liên kết không
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM product_categories WHERE category_id = ?");
+        $stmt->execute([$id]);
+        $productCount = $stmt->fetchColumn();
+        
+        if ($productCount > 0) {
+            error_log("Cannot delete category $id: linked to $productCount products");
+            return false;
+        }
+        
+        $conn->beginTransaction();
+        
+        // Xóa liên kết trong product_categories trước (để đảm bảo)
+        $stmt = $conn->prepare("DELETE FROM product_categories WHERE category_id = ?");
+        $stmt->execute([$id]);
+        
+        // Sau đó xóa danh mục
+        $stmt = $conn->prepare("DELETE FROM categories WHERE id = ?");
+        $stmt->execute([$id]);
+        
+        if ($stmt->rowCount() == 0) {
+            throw new Exception("No category was deleted");
+        }
+        
+        $conn->commit();
+        return true;
+    } catch (PDOException $e) {
+        $conn->rollback();
+        error_log("Database error deleting category: " . $e->getMessage());
+        return false;
+    } catch (Exception $e) {
+        $conn->rollback();
+        error_log("Error deleting category: " . $e->getMessage());
+        return false;
+    }
 }
 ?>

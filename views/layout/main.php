@@ -23,15 +23,20 @@ if (!isset($page)) {
     // Trang chủ: hiển thị các phần mặc định
     include __DIR__ . '/partials/banner.php';
     include __DIR__ . '/partials/danhmucsp.php';
-    include __DIR__ . '/partials/sanphamnoibat.php';
-    include __DIR__ . '/partials/sanphamthinhhanh.php';
-    include __DIR__ . '/partials/danhsachsp.php';
+    include __DIR__ . '/partials/giaymoi.php';
+    include __DIR__ . '/partials/banchaynhat.php';
 } else {
     // Trang động: chỉ hiển thị nội dung động
     if ($page === 'shop') {
         include __DIR__ . '/../sanpham/shop.php';
+    } elseif ($page === 'product') {
+        include __DIR__ . '/../sanpham/product-detail.php';
     } elseif ($page === 'lienhe') {
         include __DIR__ . '/../lienhe/index.php';
+    } else {
+        // Các trang khác sẽ được xử lý riêng
+        header("Location: /NHOM4_DU_AN_1/index.php");
+        exit;
     }
 }
 

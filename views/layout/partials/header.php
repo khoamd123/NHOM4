@@ -12,14 +12,14 @@
                     <!-- ***** Menu Start ***** -->
                     <ul class="nav">
 
-                      <li><a href="/NHOM4_DU_AN_1/index.php">Home</a></li>
-                      <li><a href="/NHOM4_DU_AN_1/index.php?page=shop">Our Shop</a></li>
-                      <li><a href="/NHOM4_DU_AN_1/index.php?page=lienhe">Contact Us</a></li>
+                      <li><a href="/NHOM4_DU_AN_1/index.php">Trang chủ</a></li>
+                      <li><a href="/NHOM4_DU_AN_1/index.php?page=shop">Cửa hàng</a></li>
+                      <li><a href="/NHOM4_DU_AN_1/index.php?page=lienhe">Liên hệ</a></li>
                       
                       <?php if (isset($_SESSION['user'])): ?>
-                        <li><a href="/NHOM4_DU_AN_1/client/index.php?controller=user&action=logout">Logout</a></li>
+                        <li><a href="/NHOM4_DU_AN_1/index.php?controller=user&action=logout">Đăng xuất</a></li>
                       <?php else: ?>
-                        <li><a href="/NHOM4_DU_AN_1/client/index.php?controller=user&action=login">Login</a></li>
+                        <li><a href="/NHOM4_DU_AN_1/index.php?controller=user&action=login">Đăng nhập</a></li>
                         
                       <?php endif; ?>
 

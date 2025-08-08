@@ -22,27 +22,7 @@ if (isset($_POST['add'])) {
     exit;
 }
 
-// Xử lý xóa tài khoản
-if (isset($_GET['delete'])) {
-    $id = $_GET['delete'];
-    if (deleteUser($id)) {
-        header("Location: /NHOM4_DU_AN_1/admin/index.php?action=users&success=2");
-    } else {
-        header("Location: /NHOM4_DU_AN_1/admin/index.php?action=users&error=2");
-    }
-    exit;
-}
 
-// Xử lý toggle trạng thái tài khoản
-if (isset($_GET['toggle_status'])) {
-    $id = $_GET['toggle_status'];
-    if (toggleUserStatus($id)) {
-        header("Location: /NHOM4_DU_AN_1/admin/index.php?action=users&success=3");
-    } else {
-        header("Location: /NHOM4_DU_AN_1/admin/index.php?action=users&error=3");
-    }
-    exit;
-}
 
 // Lấy danh sách tài khoản
 $users = getAllUsers();

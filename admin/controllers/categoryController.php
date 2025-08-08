@@ -33,8 +33,18 @@ if (isset($_POST['update'])) {
 // Xử lý xóa danh mục
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
-    deleteCategory($id);
-    header("Location: /NHOM4_DU_AN_1/admin/index.php?action=categories");
+    
+    // Debug: Ghi log
+    error_log("Attempting to delete category with ID: $id");
+    
+    $result = deleteCategory($id);
+    error_log("Delete result: " . ($result ? "true" : "false"));
+    
+    if ($result) {
+        header("Location: /NHOM4_DU_AN_1/admin/index.php?action=categories&success=3");
+    } else {
+        header("Location: /NHOM4_DU_AN_1/admin/index.php?action=categories&error=3");
+    }
     exit;
 }
 

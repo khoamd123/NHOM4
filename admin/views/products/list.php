@@ -43,6 +43,20 @@
         .product-image:hover {
             transform: scale(1.1);
         }
+        .badge {
+            font-size: 0.8em;
+            padding: 0.4em 0.6em;
+        }
+        .badge.bg-success {
+            background-color: #198754 !important;
+        }
+        .badge.bg-danger {
+            background-color: #dc3545 !important;
+        }
+        .badge.bg-warning {
+            background-color: #ffc107 !important;
+            color: #000;
+        }
         .image-preview {
             position: fixed;
             top: 0;
@@ -166,6 +180,7 @@
                                 <th>Tên sản phẩm</th>
                                 <th>Thương hiệu</th>
                                 <th>Giá (VNĐ)</th>
+                                <th>Số lượng</th>
                                 <th>Giới tính</th>
                                 <th>Danh mục</th>
                                 <th>Trạng thái</th>
@@ -178,11 +193,19 @@
                                 <td><?= $product['id'] ?></td>
                                 <td>
                                     <?php if (!empty($product['image'])): ?>
-                                        <img src="<?= htmlspecialchars($product['image']) ?>" 
+                                        <?php 
+                                        // Kiểm tra xem ảnh có phải là URL hay tên file
+                                        if (filter_var($product['image'], FILTER_VALIDATE_URL)) {
+                                            $imageSrc = $product['image'];
+                                        } else {
+                                            $imageSrc = '/NHOM4_DU_AN_1/public/uploads/products/' . $product['image'];
+                                        }
+                                        ?>
+                                        <img src="<?= htmlspecialchars($imageSrc) ?>" 
                                              alt="<?= htmlspecialchars($product['name']) ?>" 
                                              class="product-image" 
                                              style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;"
-                                             onclick="openImagePreview('<?= htmlspecialchars($product['image']) ?>', '<?= htmlspecialchars($product['name']) ?>')">
+                                             onclick="openImagePreview('<?= htmlspecialchars($imageSrc) ?>', '<?= htmlspecialchars($product['name']) ?>')">
                                     <?php else: ?>
                                         <div class="no-image" style="width: 60px; height: 60px; background-color: #f8f9fa; border: 1px dashed #dee2e6; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: #6c757d; font-size: 12px;">
                                             No Image
@@ -192,6 +215,17 @@
                                 <td><?= htmlspecialchars($product['name']) ?></td>
                                 <td><?= htmlspecialchars($product['brand']) ?></td>
                                 <td><?= number_format($product['price'], 0, ',', '.') ?> VNĐ</td>
+                                <td>
+                                    <?php 
+                                    $totalStock = getProductTotalStock($product['id']);
+                                    if ($totalStock <= 0): ?>
+                                        <span class="badge bg-danger">Hết hàng</span>
+                                    <?php elseif ($totalStock <= 10): ?>
+                                        <span class="badge bg-warning"><?= $totalStock ?> còn</span>
+                                    <?php else: ?>
+                                        <span class="badge bg-success"><?= $totalStock ?> còn</span>
+                                    <?php endif; ?>
+                                </td>
                                 <td>
                                     <?php
                                     switch ($product['gender']) {
@@ -232,7 +266,7 @@
                         <h5>Chỉnh sửa sản phẩm: <?= htmlspecialchars($editProduct['name']) ?></h5>
                     </div>
                     <div class="card-body">
-                        <form method="POST">
+                        <form method="POST" enctype="multipart/form-data">
                             <input type="hidden" name="id" value="<?= $editProduct['id'] ?>">
                             <div class="row">
                                 <div class="col-md-6">
@@ -252,10 +286,27 @@
                                                value="<?= $editProduct['price'] ?>" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="image" class="form-label">Hình ảnh (URL)</label>
-                                        <input type="text" class="form-control" id="image" name="image" 
-                                               value="<?= htmlspecialchars($editProduct['image'] ?? '') ?>" 
-                                               placeholder="Nhập URL hình ảnh">
+                                        <label for="image" class="form-label">Hình ảnh</label>
+                                        <input type="file" class="form-control" id="image_file" name="image_file" 
+                                               accept="image/*" onchange="previewEditImage(this)">
+                                        <input type="hidden" name="image" id="image" 
+                                               value="<?= htmlspecialchars($editProduct['image'] ?? '') ?>">
+                                        <div id="edit_image_preview" class="mt-2">
+                                            <?php if (!empty($editProduct['image'])): ?>
+                                                <?php 
+                                                if (filter_var($editProduct['image'], FILTER_VALIDATE_URL)) {
+                                                    $imageSrc = $editProduct['image'];
+                                                } else {
+                                                    $imageSrc = '/NHOM4_DU_AN_1/public/uploads/products/' . $editProduct['image'];
+                                                }
+                                                ?>
+                                                <img src="<?= htmlspecialchars($imageSrc) ?>" 
+                                                     alt="Current image" style="max-width: 200px; max-height: 200px; border-radius: 5px;">
+                                            <?php endif; ?>
+                                        </div>
+                                        <small class="form-text text-muted">Hoặc nhập URL hình ảnh:</small>
+                                        <input type="text" class="form-control mt-1" name="image_url" 
+                                               placeholder="Nhập URL hình ảnh (tùy chọn)">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -457,6 +508,37 @@
             if (e.target === this) {
                 closeImagePreview();
             }
+        });
+
+        // Hàm preview ảnh khi thêm sản phẩm mới
+        function previewImage(input) {
+            const preview = document.getElementById('image_preview');
+            const previewImg = document.getElementById('preview_img');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        // Hàm preview ảnh khi chỉnh sửa sản phẩm
+        function previewEditImage(input) {
+            const preview = document.getElementById('edit_image_preview');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = '<img src="' + e.target.result + '" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 5px;">';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
         });
 
         // Thêm sự kiện click cho tất cả ảnh sản phẩm

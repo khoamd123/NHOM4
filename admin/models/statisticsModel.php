@@ -199,4 +199,108 @@ function getMonthlyStats() {
         return [];
     }
 }
+
+// Lấy thống kê doanh thu theo tháng (cho biểu đồ)
+function getRevenueChartData() {
+    global $conn;
+    try {
+        $stmt = $conn->query("
+            SELECT 
+                DATE_FORMAT(created_at, '%Y-%m') as month,
+                SUM(total_amount) as revenue
+            FROM orders 
+            WHERE YEAR(created_at) = YEAR(CURRENT_DATE())
+            AND status != 'cancelled'
+            GROUP BY DATE_FORMAT(created_at, '%Y-%m')
+            ORDER BY month
+        ");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error getting revenue chart data: " . $e->getMessage());
+        return [];
+    }
+}
+
+// Lấy thống kê đơn hàng theo tháng (cho biểu đồ)
+function getOrdersChartData() {
+    global $conn;
+    try {
+        $stmt = $conn->query("
+            SELECT 
+                DATE_FORMAT(created_at, '%Y-%m') as month,
+                COUNT(*) as orders
+            FROM orders 
+            WHERE YEAR(created_at) = YEAR(CURRENT_DATE())
+            GROUP BY DATE_FORMAT(created_at, '%Y-%m')
+            ORDER BY month
+        ");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error getting orders chart data: " . $e->getMessage());
+        return [];
+    }
+}
+
+// Lấy thống kê người dùng mới theo tháng (cho biểu đồ)
+function getUsersChartData() {
+    global $conn;
+    try {
+        $stmt = $conn->query("
+            SELECT 
+                DATE_FORMAT(created_at, '%Y-%m') as month,
+                COUNT(*) as new_users
+            FROM users 
+            WHERE YEAR(created_at) = YEAR(CURRENT_DATE())
+            GROUP BY DATE_FORMAT(created_at, '%Y-%m')
+            ORDER BY month
+        ");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error getting users chart data: " . $e->getMessage());
+        return [];
+    }
+}
+
+// Lấy thống kê trạng thái đơn hàng (cho biểu đồ tròn)
+function getOrderStatusData() {
+    global $conn;
+    try {
+        $stmt = $conn->query("
+            SELECT 
+                status,
+                COUNT(*) as count
+            FROM orders 
+            GROUP BY status
+        ");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error getting order status data: " . $e->getMessage());
+        return [];
+    }
+}
+
+// Lấy top sản phẩm bán chạy
+function getTopProducts() {
+    global $conn;
+    try {
+        $stmt = $conn->query("
+            SELECT 
+                p.name,
+                COUNT(oi.id) as sold_count,
+                SUM(oi.quantity) as total_quantity
+            FROM products p
+            LEFT JOIN product_variants pv ON p.id = pv.product_id
+            LEFT JOIN order_items oi ON pv.id = oi.variant_id
+            LEFT JOIN orders o ON oi.order_id = o.id
+            WHERE o.status != 'cancelled' OR o.status IS NULL
+            GROUP BY p.id, p.name
+            ORDER BY total_quantity DESC
+            LIMIT 5
+        ");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error getting top products: " . $e->getMessage());
+        return [];
+    }
+}
 ?> 

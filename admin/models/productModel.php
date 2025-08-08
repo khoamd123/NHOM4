@@ -188,4 +188,22 @@ function createSlug($name) {
     $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $name)));
     return $slug;
 }
+
+// Lấy tổng số lượng tồn kho của sản phẩm (tất cả variants)
+function getProductTotalStock($productId) {
+    global $conn;
+    try {
+        $stmt = $conn->prepare("
+            SELECT COALESCE(SUM(stock), 0) as total_stock 
+            FROM product_variants 
+            WHERE product_id = ?
+        ");
+        $stmt->execute([$productId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total_stock'];
+    } catch (PDOException $e) {
+        error_log("Error getting product total stock: " . $e->getMessage());
+        return 0;
+    }
+}
 ?> 
