@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="/NHOM4_DU_AN_1/public/assets/css/templatemo-lugx-gaming.css">
     <link rel="stylesheet" href="/NHOM4_DU_AN_1/public/assets/css/owl.css">
     <link rel="stylesheet" href="/NHOM4_DU_AN_1/public/assets/css/animate.css">
+    <link rel="stylesheet" href="/NHOM4_DU_AN_1/public/assets/css/cart.css">
     
 </head>
 <body>
@@ -33,6 +34,8 @@ if (!isset($page)) {
         include __DIR__ . '/../sanpham/product-detail.php';
     } elseif ($page === 'lienhe') {
         include __DIR__ . '/../lienhe/index.php';
+    } elseif ($page === 'cart') {
+        include __DIR__ . '/../cart/index.php';
     } else {
         // Các trang khác sẽ được xử lý riêng
         header("Location: /NHOM4_DU_AN_1/index.php");
@@ -43,5 +46,7 @@ if (!isset($page)) {
 // Include footer
 include __DIR__ . '/partials/fooder.php';
 ?>
+<!-- Cart JavaScript -->
+<script src="/NHOM4_DU_AN_1/public/assets/js/cart.js"></script>
 </body>
 </html> 

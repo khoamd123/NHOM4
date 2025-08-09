@@ -15,6 +15,20 @@
                       <li><a href="/NHOM4_DU_AN_1/index.php">Trang chủ</a></li>
                       <li><a href="/NHOM4_DU_AN_1/index.php?page=shop">Cửa hàng</a></li>
                       <li><a href="/NHOM4_DU_AN_1/index.php?page=lienhe">Liên hệ</a></li>
+                      <li><a href="/NHOM4_DU_AN_1/index.php?page=cart" class="cart-link">
+                          <i class="fa fa-shopping-cart"></i> Giỏ hàng 
+                          <span class="cart-count" id="cart-count">
+                            <?php
+                            $cartCount = 0;
+                            if (isset($_SESSION['cart'])) {
+                                foreach ($_SESSION['cart'] as $item) {
+                                    $cartCount += $item['quantity'];
+                                }
+                            }
+                            echo $cartCount;
+                            ?>
+                          </span>
+                      </a></li>
                       
                       <?php if (isset($_SESSION['user'])): ?>
                         <li><a href="/NHOM4_DU_AN_1/index.php?controller=user&action=logout">Đăng xuất</a></li>

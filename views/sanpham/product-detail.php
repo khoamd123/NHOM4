@@ -126,7 +126,11 @@ if (!empty($product['category_names'])) {
                        class="form-control" style="width: 100px; display: inline-block;">
               </div>
               
-              <button class="btn btn-primary btn-lg mt-3" onclick="addToCart()">
+              <button class="btn btn-primary btn-lg mt-3 add-to-cart-btn" 
+                      data-product-id="<?= $product['id'] ?>"
+                      data-product-name="<?= htmlspecialchars($product['name']) ?>"
+                      data-product-price="<?= $product['price'] ?>"
+                      data-product-image="<?= htmlspecialchars($imageSrc) ?>">
                 <i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng
               </button>
             </div>
@@ -285,21 +289,51 @@ if (!empty($product['category_names'])) {
 </style>
 
 <script>
-function addToCart() {
-  const selectedVariant = document.querySelector('input[name="variant_id"]:checked');
-  const quantity = document.getElementById('quantity').value;
-  
-  if (!selectedVariant) {
-    alert('Vui lòng chọn size!');
-    return;
-  }
-  
-  if (quantity < 1) {
-    alert('Số lượng phải lớn hơn 0!');
-    return;
-  }
-  
-  // TODO: Implement add to cart functionality
-  alert('Đã thêm vào giỏ hàng! (Chức năng đang phát triển)');
-}
+// Override cart.js để xử lý variant và size cho trang product detail
+document.addEventListener('DOMContentLoaded', function() {
+    // Override getSelectedSize function cho product detail
+    if (window.cartManager) {
+        const originalGetSelectedSize = window.cartManager.getSelectedSize;
+        window.cartManager.getSelectedSize = function(button) {
+            // Kiểm tra variant được chọn
+            const selectedVariant = document.querySelector('input[name="variant_id"]:checked');
+            if (selectedVariant) {
+                const variantLabel = document.querySelector(`label[for="${selectedVariant.id}"]`);
+                if (variantLabel) {
+                    // Lấy size từ text của label
+                    const sizeMatch = variantLabel.textContent.match(/Size\s+([^-]+)/);
+                    return sizeMatch ? sizeMatch[1].trim() : null;
+                }
+            }
+            return originalGetSelectedSize.call(this, button);
+        };
+        
+        // Override handleAddToCart để validate variant
+        const originalHandleAddToCart = window.cartManager.handleAddToCart;
+        window.cartManager.handleAddToCart = function(button) {
+            const selectedVariant = document.querySelector('input[name="variant_id"]:checked');
+            const quantity = document.getElementById('quantity').value;
+            
+            if (!selectedVariant) {
+                this.showMessage('Vui lòng chọn size!', 'error');
+                return;
+            }
+            
+            if (quantity < 1) {
+                this.showMessage('Số lượng phải lớn hơn 0!', 'error');
+                return;
+            }
+            
+            // Kiểm tra stock
+            const variantLabel = document.querySelector(`label[for="${selectedVariant.id}"]`);
+            if (variantLabel && variantLabel.textContent.includes('Hết hàng')) {
+                this.showMessage('Sản phẩm này đã hết hàng!', 'error');
+                return;
+            }
+            
+            // Gọi hàm gốc
+            originalHandleAddToCart.call(this, button);
+        };
+    }
+});
 </script> 
