@@ -83,7 +83,7 @@
             <button type="submit" class="btn btn-login">Đăng ký</button>
         </form>
         <div class="text-center mt-3">
-            <a href="/NHOM4_DU_AN_1/client/index.php?controller=user&action=login" class="text-decoration-none">← Đã có tài khoản? Đăng nhập</a>
+            <a href="/NHOM4_DU_AN_1/index.php?controller=user&action=login" class="text-decoration-none">← Đã có tài khoản? Đăng nhập</a>
         </div>
     </div>
 </body>

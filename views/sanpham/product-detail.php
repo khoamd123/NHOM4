@@ -77,8 +77,12 @@ if (!empty($product['category_names'])) {
           </div>
           
           <div class="product-price">
-            <span class="old-price"><?= number_format($product['price'] * 1.2, 0, ',', '.') ?>đ</span>
-            <span class="current-price"><?= number_format($product['price'], 0, ',', '.') ?>đ</span>
+            <?php 
+            $currentPrice = ProductModel::getProductPrice($productId);
+            $oldPrice = $currentPrice * 1.2; // 20% discount
+            ?>
+            <span class="old-price"><?= number_format($oldPrice, 0, ',', '.') ?>đ</span>
+            <span class="current-price"><?= number_format($currentPrice, 0, ',', '.') ?>đ</span>
           </div>
           
           <div class="product-description">
@@ -120,15 +124,33 @@ if (!empty($product['category_names'])) {
             </div>
             
             <div class="add-to-cart mt-3">
-              <div class="quantity-selector">
-                <label for="quantity">Số lượng:</label>
-                <input type="number" id="quantity" name="quantity" value="1" min="1" max="10" 
-                       class="form-control" style="width: 100px; display: inline-block;">
+              <!-- Quantity Selector -->
+              <div class="quantity-selector mb-3">
+                <label for="quantity" class="form-label">Số lượng:</label>
+                <div class="input-group" style="width: 150px;">
+                  <button class="btn btn-outline-secondary" type="button" onclick="changeQuantity(-1)">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <input type="number" class="form-control text-center" id="quantity" value="1" min="1" max="10">
+                  <button class="btn btn-outline-secondary" type="button" onclick="changeQuantity(1)">
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
               </div>
               
-              <button class="btn btn-primary btn-lg mt-3" onclick="addToCart()">
-                <i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng
-              </button>
+              <!-- Action Buttons -->
+              <div class="action-buttons d-flex gap-2 mb-3">
+                <button class="btn btn-primary btn-lg add-to-cart-btn" disabled onclick="addToCartFromDetail()">
+                  <i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng
+                </button>
+                <button class="btn btn-success btn-lg buy-now-btn" disabled onclick="buyNow()">
+                  <i class="fa fa-bolt"></i> Mua ngay
+                </button>
+              </div>
+              
+              <p class="text-muted">
+                <i class="fas fa-info-circle"></i> Vui lòng chọn size để tiếp tục
+              </p>
             </div>
           </div>
           <?php else: ?>
@@ -159,7 +181,7 @@ if (!empty($product['category_names'])) {
               <div class="col-lg-3 col-md-6 mb-4">
                 <div class="item">
                                      <div class="thumb">
-                     <a href="/NHOM4_DU_AN_1/product.php?page=product&id=<?= $relatedProduct['id'] ?>">
+                     <a href="/NHOM4_DU_AN_1/index.php?page=product&id=<?= $relatedProduct['id'] ?>">
                        <?php 
                        if (!empty($relatedProduct['image'])) {
                            if (filter_var($relatedProduct['image'], FILTER_VALIDATE_URL)) {
@@ -183,7 +205,7 @@ if (!empty($product['category_names'])) {
                   <div class="down-content">
                     <span class="category"><?= htmlspecialchars($relatedProduct['brand']) ?></span>
                     <h4><?= htmlspecialchars($relatedProduct['name']) ?></h4>
-                                         <a href="/NHOM4_DU_AN_1/product.php?page=product&id=<?= $relatedProduct['id'] ?>">
+                                         <a href="/NHOM4_DU_AN_1/index.php?page=product&id=<?= $relatedProduct['id'] ?>">
                        <i class="fa fa-shopping-bag"></i>
                      </a>
                   </div>
@@ -282,24 +304,249 @@ if (!empty($product['category_names'])) {
 .product-main-image:hover {
   transform: scale(1.02);
 }
+
+/* Action Buttons Styling */
+.action-buttons {
+  gap: 15px !important;
+}
+
+.action-buttons .btn {
+  flex: 1;
+  padding: 15px 20px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.add-to-cart-btn {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  border: none;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+
+.add-to-cart-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+.buy-now-btn {
+  background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+  border: none;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.buy-now-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.action-buttons .btn:disabled {
+  background: #6c757d;
+  box-shadow: none;
+  transform: none;
+}
+
+.action-buttons .btn i {
+  margin-right: 8px;
+}
+
+/* Quantity Selector Enhancement */
+.quantity-selector .input-group {
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.quantity-selector .btn {
+  border: none;
+  background: #f8f9fa;
+  color: #495057;
+  width: 40px;
+}
+
+.quantity-selector .btn:hover {
+  background: #e9ecef;
+  color: #212529;
+}
+
+.quantity-selector .form-control {
+  border: none;
+  background: white;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Force Buy Button Styles */
+.buy-now-btn {
+  background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important;
+  border-color: #28a745 !important;
+  color: white !important;
+  opacity: 1 !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+.buy-now-btn:hover {
+  background: linear-gradient(135deg, #218838 0%, #1e7e34 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4) !important;
+}
+
+.buy-now-btn:disabled {
+  background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important;
+  opacity: 0.9 !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  
+  .action-buttons .btn {
+    width: 100%;
+    padding: 12px 15px;
+  }
+}
 </style>
 
 <script>
-function addToCart() {
-  const selectedVariant = document.querySelector('input[name="variant_id"]:checked');
-  const quantity = document.getElementById('quantity').value;
+let selectedVariantId = null;
+
+function changeQuantity(change) {
+  const quantityInput = document.getElementById('quantity');
+  let currentValue = parseInt(quantityInput.value);
+  let newValue = currentValue + change;
   
-  if (!selectedVariant) {
-    alert('Vui lòng chọn size!');
-    return;
+  if (newValue >= 1 && newValue <= parseInt(quantityInput.max)) {
+    quantityInput.value = newValue;
   }
-  
-  if (quantity < 1) {
-    alert('Số lượng phải lớn hơn 0!');
-    return;
-  }
-  
-  // TODO: Implement add to cart functionality
-  alert('Đã thêm vào giỏ hàng! (Chức năng đang phát triển)');
 }
+
+function addToCartFromDetail() {
+  if (!selectedVariantId) {
+    alert('Vui lòng chọn size và màu sắc');
+    return;
+  }
+  
+  const quantity = parseInt(document.getElementById('quantity').value);
+  addToCart(selectedVariantId, quantity);
+}
+
+function buyNow() {
+  // Direct redirect to checkout - simplified
+  console.log('buyNow clicked - redirecting to checkout');
+  window.location.href = '/NHOM4_DU_AN_1/index.php?page=checkout';
+}
+
+// Update the selectVariant function for this page
+function selectVariant(variantId, element) {
+  // Remove active class from all variants
+  document.querySelectorAll('.btn-check').forEach(option => {
+    const label = document.querySelector(`label[for="${option.id}"]`);
+    if (label) label.classList.remove('active');
+  });
+  
+  // Add active class to selected variant
+  element.classList.add('active');
+  
+  // Update selected variant
+  selectedVariantId = variantId;
+  
+  // Enable both buttons
+  const addButton = document.querySelector('.add-to-cart-btn');
+  const buyButton = document.querySelector('.buy-now-btn');
+  
+  if (addButton) {
+    addButton.disabled = false;
+  }
+  if (buyButton) {
+    buyButton.disabled = false;
+  }
+  
+  const infoText = document.querySelector('.text-muted');
+  if (infoText) {
+    infoText.innerHTML = '<i class="fas fa-check-circle text-success"></i> Đã chọn size, có thể mua hàng';
+  }
+}
+
+// Auto-select variant when radio is clicked
+document.addEventListener('DOMContentLoaded', function() {
+  // FORCE ENABLE BUTTONS IMMEDIATELY
+  setTimeout(function() {
+    const addButton = document.querySelector('.add-to-cart-btn');
+    const buyButton = document.querySelector('.buy-now-btn');
+    
+    console.log('Force enabling buttons...');
+    
+    if (addButton) {
+      addButton.disabled = false;
+      addButton.style.opacity = '1';
+      addButton.style.cursor = 'pointer';
+      console.log('Add button enabled');
+    }
+    
+    if (buyButton) {
+      buyButton.disabled = false;
+      buyButton.style.background = 'linear-gradient(135deg, #28a745 0%, #1e7e34 100%)';
+      buyButton.style.opacity = '1';
+      buyButton.style.cursor = 'pointer';
+      buyButton.style.color = 'white';
+      console.log('Buy button enabled and styled');
+    }
+    
+    // Remove warning message
+    const warningMsg = document.querySelector('.text-muted');
+    if (warningMsg && warningMsg.textContent.includes('Vui lòng chọn size')) {
+      warningMsg.innerHTML = '<i class="fas fa-info-circle text-info"></i> Sẵn sàng mua hàng';
+    }
+  }, 100);
+  
+  document.querySelectorAll('.btn-check').forEach(radio => {
+    radio.addEventListener('change', function() {
+      if (this.checked) {
+        const label = document.querySelector(`label[for="${this.id}"]`);
+        selectVariant(this.value, label);
+      }
+    });
+  });
+});
+</script>
+
+<script src="/NHOM4_DU_AN_1/public/assets/js/cart.js"></script>
+
+<!-- EMERGENCY FIX: Force enable buy button -->
+<script>
+// Multiple attempts to ensure button works
+setTimeout(() => {
+  const buyBtn = document.querySelector('.buy-now-btn');
+  if (buyBtn) {
+    buyBtn.disabled = false;
+    buyBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #1e7e34 100%)';
+    buyBtn.style.color = 'white';
+    buyBtn.style.opacity = '1';
+    buyBtn.style.cursor = 'pointer';
+    buyBtn.onclick = function() {
+      console.log('Buy now clicked!');
+      alert('Chuyển đến trang thanh toán...');
+      window.location.href = '/NHOM4_DU_AN_1/index.php?page=checkout';
+    };
+    console.log('✅ EMERGENCY FIX: Buy button fully enabled!');
+  }
+}, 500);
+
+// Force again after 1 second
+setTimeout(() => {
+  const buyBtn = document.querySelector('.buy-now-btn');
+  if (buyBtn && buyBtn.disabled) {
+    buyBtn.disabled = false;
+    buyBtn.style.background = '#28a745';
+    console.log('🔧 Second attempt: Buy button enabled');
+  }
+}, 1000);
 </script> 

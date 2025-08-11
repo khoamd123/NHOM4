@@ -21,7 +21,7 @@
             <div class="down-content">
               <span class="category">Nike</span>
               <h4>Air Force 1</h4>
-              <a href="/NHOM4_DU_AN_1/index.php?page=shop"><i class="fa fa-shopping-bag"></i></a>
+              <a href="/NHOM4_DU_AN_1/index.php?page=product&id=1"><i class="fa fa-shopping-bag"></i></a>
             </div>
           </div>
         </div>
@@ -34,7 +34,7 @@
             <div class="down-content">
               <span class="category">Adidas</span>
               <h4>Yeezy Boost</h4>
-              <a href="/NHOM4_DU_AN_1/index.php?page=shop"><i class="fa fa-shopping-bag"></i></a>
+              <a href="/NHOM4_DU_AN_1/index.php?page=product&id=1"><i class="fa fa-shopping-bag"></i></a>
             </div>
           </div>
         </div>
@@ -47,7 +47,7 @@
             <div class="down-content">
               <span class="category">Puma</span>
               <h4>RS-X 3</h4>
-              <a href="/NHOM4_DU_AN_1/index.php?page=shop"><i class="fa fa-shopping-bag"></i></a>
+              <a href="/NHOM4_DU_AN_1/index.php?page=product&id=1"><i class="fa fa-shopping-bag"></i></a>
             </div>
           </div>
         </div>
@@ -60,7 +60,7 @@
             <div class="down-content">
               <span class="category">Nike</span>
               <h4>Air Jordan 4</h4>
-              <a href="/NHOM4_DU_AN_1/index.php?page=shop"><i class="fa fa-shopping-bag"></i></a>
+              <a href="/NHOM4_DU_AN_1/index.php?page=product&id=1"><i class="fa fa-shopping-bag"></i></a>
             </div>
           </div>
         </div>

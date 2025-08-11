@@ -10,7 +10,8 @@ class UserController {
             $user = User::findByEmail($_POST['email']);
             if ($user && password_verify($_POST['password'], $user['password']))  {
                 $_SESSION['user'] = $user;
-                header("Location: /NHOM4_DU_AN_1/index.php");
+                // Redirect với tham số để cart badge refresh
+                header("Location: /NHOM4_DU_AN_1/index.php?cart_refresh=1");
                 exit();
             } else {
                 $error = "Sai thông tin đăng nhập.";

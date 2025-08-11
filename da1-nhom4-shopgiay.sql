@@ -74,6 +74,8 @@ CREATE TABLE `orders` (
   `shipping_fee` decimal(10,2) DEFAULT NULL,
   `status` enum('pending','processing','shipped','delivered','cancelled') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
   `is_paid` tinyint(1) DEFAULT '0',
+  `shipping_info` json DEFAULT NULL COMMENT 'Thông tin giao hàng (JSON format)',
+  `notes` text COLLATE utf8mb4_unicode_ci COMMENT 'Ghi chú đơn hàng',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -446,13 +448,13 @@ INSERT INTO `categories` (`name`, `slug`) VALUES
 -- Dữ liệu mẫu cho bảng `products`
 --
 
-INSERT INTO `products` (`name`, `slug`, `description`, `price`, `image`, `created_at`) VALUES
-('Nike Air Max 270', 'nike-air-max-270', 'Giày thể thao Nike Air Max 270 với công nghệ Air Max đỉnh cao', 2500000, 'nike-air-max-270.jpg', NOW()),
-('Adidas Ultraboost 21', 'adidas-ultraboost-21', 'Giày chạy bộ Adidas Ultraboost 21 với đế Boost', 3200000, 'adidas-ultraboost-21.jpg', NOW()),
-('Giày công sở nam', 'giay-cong-so-nam', 'Giày công sở nam da thật, phong cách lịch lãm', 1800000, 'giay-cong-so-nam.jpg', NOW()),
-('Giày búp bê nữ', 'giay-bup-be-nu', 'Giày búp bê nữ thời trang, dễ phối đồ', 1200000, 'giay-bup-be-nu.jpg', NOW()),
-('Giày lười nam', 'giay-luoi-nam', 'Giày lười nam thoải mái, phù hợp mọi dịp', 800000, 'giay-luoi-nam.jpg', NOW()),
-('Giày cao gót nữ', 'giay-cao-got-nu', 'Giày cao gót nữ thanh lịch, tôn dáng', 1500000, 'giay-cao-got-nu.jpg', NOW());
+INSERT INTO `products` (`name`, `slug`, `description`, `price`, `brand`, `gender`, `image`, `status`, `created_at`) VALUES
+('Nike Air Max 270', 'nike-air-max-270', 'Giày thể thao Nike Air Max 270 với công nghệ Air Max đỉnh cao', 2500000, 'Nike', 'unisex', '/NHOM4_DU_AN_1/public/uploads/products/1753957781_688b45956189f.jpg', 1, NOW()),
+('Adidas Ultraboost 21', 'adidas-ultraboost-21', 'Giày chạy bộ Adidas Ultraboost 21 với đế Boost', 3200000, 'Adidas', 'unisex', '/NHOM4_DU_AN_1/public/uploads/products/1754561725_68947cbd453a6.jpg', 1, NOW()),
+('Giày công sở nam', 'giay-cong-so-nam', 'Giày công sở nam da thật, phong cách lịch lãm', 1800000, 'Bally', 'men', '/NHOM4_DU_AN_1/public/uploads/products/1754563000_689481b83ab00.jpg', 1, NOW()),
+('Giày búp bê nữ', 'giay-bup-be-nu', 'Giày búp bê nữ thời trang, dễ phối đồ', 1200000, 'Charles & Keith', 'women', '/NHOM4_DU_AN_1/public/uploads/products/1754563143_689482479a486.jpg', 1, NOW()),
+('Giày lười nam', 'giay-luoi-nam', 'Giày lười nam thoải mái, phù hợp mọi dịp', 800000, 'Clarks', 'men', '/NHOM4_DU_AN_1/public/uploads/products/1754563216_6894829046019.jpg', 1, NOW()),
+('Giày cao gót nữ', 'giay-cao-got-nu', 'Giày cao gót nữ thanh lịch, tôn dáng', 1500000, 'Jimmy Choo', 'women', '/NHOM4_DU_AN_1/public/uploads/products/1754563292_689482dccef48.jpg', 1, NOW());
 
 --
 -- Dữ liệu mẫu cho bảng `product_variants`
@@ -477,12 +479,12 @@ INSERT INTO `product_variants` (`product_id`, `size`, `color`, `stock`, `price`)
 -- Dữ liệu mẫu cho bảng `orders`
 --
 
-INSERT INTO `orders` (`user_id`, `total_amount`, `shipping_fee`, `status`, `is_paid`, `created_at`) VALUES
-(4, 4300000, 30000, 'delivered', 1, '2024-01-15 10:30:00'),
-(5, 1800000, 30000, 'processing', 1, '2024-01-16 14:20:00'),
-(6, 3200000, 30000, 'shipped', 1, '2024-01-17 09:15:00'),
-(4, 1200000, 30000, 'pending', 0, '2024-01-18 16:45:00'),
-(5, 800000, 30000, 'cancelled', 0, '2024-01-19 11:30:00');
+INSERT INTO `orders` (`user_id`, `total_amount`, `shipping_fee`, `status`, `is_paid`, `shipping_info`, `notes`, `created_at`) VALUES
+(4, 4300000, 30000, 'delivered', 1, '{"fullname":"Nguyễn Văn A","phone":"0901234567","address":"123 Đường ABC, Quận 1, TP.HCM"}', 'Giao hàng nhanh', '2024-01-15 10:30:00'),
+(5, 1800000, 30000, 'processing', 1, '{"fullname":"Trần Thị B","phone":"0987654321","address":"456 Đường XYZ, Quận 2, TP.HCM"}', 'Giao giờ hành chính', '2024-01-16 14:20:00'),
+(6, 3200000, 30000, 'shipped', 1, '{"fullname":"Lê Văn C","phone":"0912345678","address":"789 Đường DEF, Quận 3, TP.HCM"}', NULL, '2024-01-17 09:15:00'),
+(4, 1200000, 30000, 'pending', 0, '{"fullname":"Nguyễn Văn A","phone":"0901234567","address":"123 Đường ABC, Quận 1, TP.HCM"}', 'Không giao cuối tuần', '2024-01-18 16:45:00'),
+(5, 800000, 30000, 'cancelled', 0, '{"fullname":"Trần Thị B","phone":"0987654321","address":"456 Đường XYZ, Quận 2, TP.HCM"}', 'Khách hủy đơn', '2024-01-19 11:30:00');
 
 --
 -- Dữ liệu mẫu cho bảng `order_items`

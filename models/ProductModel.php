@@ -266,5 +266,67 @@ class ProductModel {
             return [];
         }
     }
+
+    // Lấy giá hiện tại của sản phẩm (từ variants hoặc base price)
+    public static function getProductPrice($productId) {
+        global $conn;
+        
+        try {
+            // Kiểm tra xem có variants không
+            $stmt = $conn->prepare("
+                SELECT MIN(price) as min_price, MAX(price) as max_price, AVG(price) as avg_price
+                FROM product_variants 
+                WHERE product_id = ? AND stock > 0
+            ");
+            $stmt->execute([$productId]);
+            $variants = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($variants && $variants['min_price'] !== null) {
+                // Nếu có variants, trả về giá thấp nhất
+                return $variants['min_price'];
+            } else {
+                // Nếu không có variants, trả về giá base
+                $stmt = $conn->prepare("SELECT price FROM products WHERE id = ?");
+                $stmt->execute([$productId]);
+                $product = $stmt->fetch(PDO::FETCH_ASSOC);
+                return $product ? $product['price'] : 0;
+            }
+        } catch (PDOException $e) {
+            error_log("Error getting product price: " . $e->getMessage());
+            return 0;
+        }
+    }
+
+    // Lấy range giá cho sản phẩm (nếu có variants)
+    public static function getProductPriceRange($productId) {
+        global $conn;
+        
+        try {
+            $stmt = $conn->prepare("
+                SELECT MIN(price) as min_price, MAX(price) as max_price
+                FROM product_variants 
+                WHERE product_id = ? AND stock > 0
+            ");
+            $stmt->execute([$productId]);
+            $variants = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($variants && $variants['min_price'] !== null) {
+                if ($variants['min_price'] == $variants['max_price']) {
+                    return number_format($variants['min_price'], 0, ',', '.') . '₫';
+                } else {
+                    return number_format($variants['min_price'], 0, ',', '.') . '₫ - ' . number_format($variants['max_price'], 0, ',', '.') . '₫';
+                }
+            } else {
+                // Fallback về giá base
+                $stmt = $conn->prepare("SELECT price FROM products WHERE id = ?");
+                $stmt->execute([$productId]);
+                $product = $stmt->fetch(PDO::FETCH_ASSOC);
+                return $product ? number_format($product['price'], 0, ',', '.') . '₫' : '0₫';
+            }
+        } catch (PDOException $e) {
+            error_log("Error getting product price range: " . $e->getMessage());
+            return '0₫';
+        }
+    }
 }
 ?> 

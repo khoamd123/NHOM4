@@ -20,7 +20,7 @@
             <div class="down-content">
                 <span class="category">Nike</span>
                 <h4>Air Max 270</h4>
-                <a href="/NHOM4_DU_AN_1/index.php?page=shop">Xem chi tiết</a>
+                <a href="/NHOM4_DU_AN_1/index.php?page=product&id=1">Xem chi tiết</a>
             </div>
           </div>
         </div>
@@ -32,7 +32,7 @@
             <div class="down-content">
                 <span class="category">Adidas</span>
                 <h4>Ultraboost 21</h4>
-                <a href="/NHOM4_DU_AN_1/index.php?page=shop">Xem chi tiết</a>
+                <a href="/NHOM4_DU_AN_1/index.php?page=product&id=1">Xem chi tiết</a>
             </div>
           </div>
         </div>
@@ -44,7 +44,7 @@
             <div class="down-content">
                 <span class="category">Puma</span>
                 <h4>RS-X 3</h4>
-                <a href="/NHOM4_DU_AN_1/index.php?page=shop">Xem chi tiết</a>
+                <a href="/NHOM4_DU_AN_1/index.php?page=product&id=1">Xem chi tiết</a>
             </div>
           </div>
         </div>
@@ -56,7 +56,7 @@
             <div class="down-content">
                 <span class="category">Nike</span>
                 <h4>Air Jordan 1</h4>
-                <a href="/NHOM4_DU_AN_1/index.php?page=shop">Xem chi tiết</a>
+                <a href="/NHOM4_DU_AN_1/index.php?page=product&id=1">Xem chi tiết</a>
             </div>
           </div>
         </div>
@@ -68,7 +68,7 @@
             <div class="down-content">
                 <span class="category">Adidas</span>
                 <h4>Stan Smith</h4>
-                <a href="/NHOM4_DU_AN_1/index.php?page=shop">Xem chi tiết</a>
+                <a href="/NHOM4_DU_AN_1/index.php?page=product&id=1">Xem chi tiết</a>
             </div>
           </div>
         </div>
@@ -80,7 +80,7 @@
             <div class="down-content">
                 <span class="category">Puma</span>
                 <h4>Future Rider</h4>
-                <a href="/NHOM4_DU_AN_1/index.php?page=shop">Xem chi tiết</a>
+                <a href="/NHOM4_DU_AN_1/index.php?page=product&id=1">Xem chi tiết</a>
             </div>
           </div>
         </div>

@@ -26,7 +26,7 @@
       <div class="col-lg-3 col-md-6">
         <div class="item">
                      <div class="thumb">
-             <a href="/NHOM4_DU_AN_1/index.php?page=shop">
+             <a href="/NHOM4_DU_AN_1/index.php?page=product&id=<?= $product['id'] ?>">
                <?php 
                $imagePath = "/NHOM4_DU_AN_1/public/uploads/products/" . htmlspecialchars($product['image']);
                $fullImagePath = __DIR__ . "/../../../public/uploads/products/" . htmlspecialchars($product['image']);
@@ -40,14 +40,18 @@
                <?php endif; ?>
              </a>
             <span class="price">
-              <em><?= number_format($product['price'] * 1.2, 0, ',', '.') ?>đ</em>
-              <?= number_format($product['price'], 0, ',', '.') ?>đ
+              <?php 
+              $currentPrice = ProductModel::getProductPrice($product['id']);
+              $oldPrice = $currentPrice * 1.2; // 20% discount
+              ?>
+              <em><?= number_format($oldPrice, 0, ',', '.') ?>đ</em>
+              <?= number_format($currentPrice, 0, ',', '.') ?>đ
             </span>
           </div>
           <div class="down-content">
             <span class="category"><?= htmlspecialchars($product['brand']) ?></span>
             <h4><?= htmlspecialchars($product['name']) ?></h4>
-                         <a href="/NHOM4_DU_AN_1/index.php?page=shop">
+                         <a href="/NHOM4_DU_AN_1/index.php?page=product&id=<?= $product['id'] ?>">
                <i class="fa fa-shopping-bag"></i>
              </a>
           </div>

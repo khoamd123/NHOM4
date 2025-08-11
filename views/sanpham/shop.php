@@ -10,9 +10,10 @@ $allColors = ProductModel::getAllColors();
 $allSizes = ProductModel::getAllSizes();
 $allGenders = ProductModel::getAllGenders();
 
-// Lấy tham số lọc từ URL (chỉ 3 bộ lọc mới + search)
+// Lấy tham số lọc từ URL (bao gồm category)
 $filters = [
     'search' => isset($_GET['search']) ? $_GET['search'] : '',
+    'category' => isset($_GET['category']) ? $_GET['category'] : '',
     'colors' => isset($_GET['colors']) ? explode(',', $_GET['colors']) : [],
     'sizes' => isset($_GET['sizes']) ? explode(',', $_GET['sizes']) : [],
     'genders' => isset($_GET['genders']) ? explode(',', $_GET['genders']) : []
@@ -27,7 +28,7 @@ $filters['genders'] = array_filter($filters['genders']);
 $products = ProductModel::getFilteredProducts($filters);
 
 // Nếu không có filter nào, lấy tất cả sản phẩm
-if (empty($products) && empty($filters['search']) && empty($filters['colors']) && empty($filters['sizes']) && empty($filters['genders'])) {
+if (empty($products) && empty($filters['search']) && empty($filters['category']) && empty($filters['colors']) && empty($filters['sizes']) && empty($filters['genders'])) {
     $products = ProductModel::getAllProducts();
 }
 
@@ -91,6 +92,50 @@ function getGenderIcon($gender) {
               <i class="fa fa-times"></i> Xóa tất cả
             </button>
           </div>
+
+          <!-- Active Filters Display -->
+          <?php if (!empty($filters['category']) || !empty($filters['colors']) || !empty($filters['sizes']) || !empty($filters['genders']) || !empty($filters['search'])): ?>
+          <div class="active-filters">
+            <h6 class="active-filters-title">Đang lọc:</h6>
+            <div class="filter-tags">
+              <?php if (!empty($filters['category'])): ?>
+                <span class="filter-tag category-tag">
+                  <i class="fa fa-tag"></i> <?= htmlspecialchars($filters['category']) ?>
+                  <button onclick="removeFilter('category')" class="remove-tag">×</button>
+                </span>
+              <?php endif; ?>
+              
+              <?php if (!empty($filters['search'])): ?>
+                <span class="filter-tag search-tag">
+                  <i class="fa fa-search"></i> "<?= htmlspecialchars($filters['search']) ?>"
+                  <button onclick="removeFilter('search')" class="remove-tag">×</button>
+                </span>
+              <?php endif; ?>
+              
+              <?php foreach ($filters['colors'] as $color): ?>
+                <span class="filter-tag color-tag">
+                  <span class="color-dot" style="background-color: <?= getColorCode($color) ?>"></span>
+                  <?= htmlspecialchars($color) ?>
+                  <button onclick="removeColorFilter('<?= htmlspecialchars($color) ?>')" class="remove-tag">×</button>
+                </span>
+              <?php endforeach; ?>
+              
+              <?php foreach ($filters['sizes'] as $size): ?>
+                <span class="filter-tag size-tag">
+                  <i class="fa fa-expand-arrows-alt"></i> <?= htmlspecialchars($size) ?>
+                  <button onclick="removeSizeFilter('<?= htmlspecialchars($size) ?>')" class="remove-tag">×</button>
+                </span>
+              <?php endforeach; ?>
+              
+              <?php foreach ($filters['genders'] as $gender): ?>
+                <span class="filter-tag gender-tag">
+                  <?= getGenderIcon($gender) ?> <?= $genderLabels[$gender] ?? $gender ?>
+                  <button onclick="removeGenderFilter('<?= htmlspecialchars($gender) ?>')" class="remove-tag">×</button>
+                </span>
+              <?php endforeach; ?>
+            </div>
+          </div>
+          <?php endif; ?>
 
           <!-- Filter theo màu sắc -->
           <div class="filter-section">
@@ -242,17 +287,17 @@ function getGenderIcon($gender) {
         <!-- Desktop Search -->
         <div class="d-none d-md-block mb-3">
           <div class="search-bar">
-            <form method="GET" action="" class="d-flex">
-              <input type="hidden" name="page" value="shop">
+        <form method="GET" action="" class="d-flex">
+          <input type="hidden" name="page" value="shop">
               <input type="text" name="search" value="<?= htmlspecialchars($filters['search']) ?>" 
-                     class="form-control me-2" placeholder="Tìm kiếm sản phẩm...">
-              <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                 class="form-control me-2" placeholder="Tìm kiếm sản phẩm...">
+          <button type="submit" class="btn btn-primary">Tìm kiếm</button>
               <?php if (!empty($filters['search'])): ?>
                 <a href="?page=shop" class="btn btn-secondary ms-2">Xóa</a>
-              <?php endif; ?>
-            </form>
-          </div>
-        </div>
+          <?php endif; ?>
+        </form>
+      </div>
+    </div>
 
         <!-- Results Info -->
         <div class="results-info mb-3">
@@ -273,65 +318,69 @@ function getGenderIcon($gender) {
               • Từ khóa: <strong>"<?= htmlspecialchars($filters['search']) ?>"</strong>
             <?php endif; ?>
           <?php endif; ?>
-        </div>
+    </div>
 
         <!-- Products Grid -->
-        <div class="row trending-box">
-          <?php if (empty($products)): ?>
-            <div class="col-12 text-center">
-              <h4>Không tìm thấy sản phẩm nào</h4>
-              <p>Vui lòng thử lại với bộ lọc khác</p>
-            </div>
-          <?php else: ?>
-            <?php foreach ($products as $product): ?>
-              <div class="col-lg-4 col-md-6 align-self-center mb-30 trending-items">
-                <div class="item">
-                  <div class="thumb">
-                    <a href="/NHOM4_DU_AN_1/product.php?page=product&id=<?= $product['id'] ?>">
-                      <?php 
-                      $imagePath = "/NHOM4_DU_AN_1/public/uploads/products/" . htmlspecialchars($product['image']);
-                      $fullImagePath = __DIR__ . "/../../public/uploads/products/" . htmlspecialchars($product['image']);
-                      
-                      if (!empty($product['image']) && file_exists($fullImagePath)): ?>
-                        <img src="<?= $imagePath ?>" 
-                             alt="<?= htmlspecialchars($product['name']) ?>" style="width: 100%; height: 200px; object-fit: cover;">
-                      <?php else: ?>
-                        <img src="/NHOM4_DU_AN_1/public/assets/images/trending-01.jpg" 
-                             alt="<?= htmlspecialchars($product['name']) ?>" style="width: 100%; height: 200px; object-fit: cover;">
-                      <?php endif; ?>
-                    </a>
-                    <span class="price">
-                      <em><?= number_format($product['price'] * 1.2, 0, ',', '.') ?>đ</em>
-                      <?= number_format($product['price'], 0, ',', '.') ?>đ
-                    </span>
-                  </div>
-                  <div class="down-content">
-                    <span class="category"><?= htmlspecialchars($product['brand']) ?></span>
-                    <h4><?= htmlspecialchars($product['name']) ?></h4>
-                    <a href="/NHOM4_DU_AN_1/product.php?page=product&id=<?= $product['id'] ?>">
-                      <i class="fa fa-shopping-bag"></i>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            <?php endforeach; ?>
-          <?php endif; ?>
+    <div class="row trending-box">
+      <?php if (empty($products)): ?>
+        <div class="col-12 text-center">
+          <h4>Không tìm thấy sản phẩm nào</h4>
+          <p>Vui lòng thử lại với bộ lọc khác</p>
         </div>
-
-        <!-- Phân trang -->
-        <?php if (count($products) > 12): ?>
-          <div class="row">
-            <div class="col-lg-12">
-              <ul class="pagination">
-                <li><a href="#"> &lt; </a></li>
-                <li><a href="#">1</a></li>
-                <li><a class="is_active" href="#">2</a></li>
-                <li><a href="#">3</a></li>
-                <li><a href="#"> &gt; </a></li>
-              </ul>
+      <?php else: ?>
+        <?php foreach ($products as $product): ?>
+              <div class="col-lg-4 col-md-6 align-self-center mb-30 trending-items">
+            <div class="item">
+              <div class="thumb">
+                    <a href="/NHOM4_DU_AN_1/index.php?page=product&id=<?= $product['id'] ?>">
+                  <?php 
+                  $imagePath = "/NHOM4_DU_AN_1/public/uploads/products/" . htmlspecialchars($product['image']);
+                  $fullImagePath = __DIR__ . "/../../public/uploads/products/" . htmlspecialchars($product['image']);
+                  
+                  if (!empty($product['image']) && file_exists($fullImagePath)): ?>
+                    <img src="<?= $imagePath ?>" 
+                         alt="<?= htmlspecialchars($product['name']) ?>" style="width: 100%; height: 200px; object-fit: cover;">
+                  <?php else: ?>
+                    <img src="/NHOM4_DU_AN_1/public/assets/images/trending-01.jpg" 
+                         alt="<?= htmlspecialchars($product['name']) ?>" style="width: 100%; height: 200px; object-fit: cover;">
+                  <?php endif; ?>
+                </a>
+                <span class="price">
+                  <?php 
+                  $currentPrice = ProductModel::getProductPrice($product['id']);
+                  $oldPrice = $currentPrice * 1.2; // 20% discount
+                  ?>
+                  <em><?= number_format($oldPrice, 0, ',', '.') ?>đ</em>
+                  <?= number_format($currentPrice, 0, ',', '.') ?>đ
+                </span>
+              </div>
+              <div class="down-content">
+                <span class="category"><?= htmlspecialchars($product['brand']) ?></span>
+                <h4><?= htmlspecialchars($product['name']) ?></h4>
+                    <a href="/NHOM4_DU_AN_1/index.php?page=product&id=<?= $product['id'] ?>">
+                  <i class="fa fa-shopping-bag"></i>
+                </a>
+              </div>
             </div>
           </div>
-        <?php endif; ?>
+        <?php endforeach; ?>
+      <?php endif; ?>
+    </div>
+
+    <!-- Phân trang -->
+    <?php if (count($products) > 12): ?>
+      <div class="row">
+        <div class="col-lg-12">
+          <ul class="pagination">
+            <li><a href="#"> &lt; </a></li>
+            <li><a href="#">1</a></li>
+            <li><a class="is_active" href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#"> &gt; </a></li>
+          </ul>
+        </div>
+      </div>
+    <?php endif; ?>
         
       </div> <!-- End Main Content -->
     </div> <!-- End Row -->
@@ -660,6 +709,96 @@ function getGenderIcon($gender) {
   }
 }
 
+/* Active Filters Styles */
+.active-filters {
+  background: #f8f9fa;
+  padding: 15px 20px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.active-filters-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filter-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-tag {
+  display: inline-flex;
+  align-items: center;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: #495057;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+}
+
+.filter-tag:hover {
+  border-color: #e75e8d;
+  box-shadow: 0 4px 8px rgba(231, 94, 141, 0.15);
+}
+
+.filter-tag i {
+  margin-right: 6px;
+  color: #e75e8d;
+}
+
+.filter-tag.category-tag {
+  background: linear-gradient(45deg, #e75e8d, #f39c12);
+  color: white;
+  border-color: transparent;
+}
+
+.filter-tag.category-tag i {
+  color: white;
+}
+
+.filter-tag.search-tag {
+  background: linear-gradient(45deg, #3498db, #2980b9);
+  color: white;
+  border-color: transparent;
+}
+
+.filter-tag.search-tag i {
+  color: white;
+}
+
+.color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 6px;
+  border: 1px solid #ddd;
+  display: inline-block;
+}
+
+.remove-tag {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 16px;
+  margin-left: 8px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  padding: 0;
+  line-height: 1;
+}
+
+.remove-tag:hover {
+  opacity: 1;
+}
 
 </style>
 
@@ -697,16 +836,56 @@ function updateFilters() {
 }
 
 function clearAllFilters() {
-  // Redirect về trang shop không có filter (chỉ giữ search nếu có)
+  // Redirect về trang shop không có filter
+  window.location.href = '/NHOM4_DU_AN_1/index.php?page=shop';
+}
+
+function removeFilter(filterType) {
   const urlParams = new URLSearchParams(window.location.search);
-  const search = urlParams.get('search');
-  
-  let newUrl = '?page=shop';
-  if (search) {
-    newUrl += '&search=' + encodeURIComponent(search);
+  urlParams.delete(filterType);
+  window.location.search = urlParams.toString();
+}
+
+function removeColorFilter(color) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const colors = urlParams.get('colors');
+  if (colors) {
+    const colorArray = colors.split(',').filter(c => c !== color);
+    if (colorArray.length > 0) {
+      urlParams.set('colors', colorArray.join(','));
+    } else {
+      urlParams.delete('colors');
+    }
   }
-  
-  window.location.href = newUrl;
+  window.location.search = urlParams.toString();
+}
+
+function removeSizeFilter(size) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const sizes = urlParams.get('sizes');
+  if (sizes) {
+    const sizeArray = sizes.split(',').filter(s => s !== size);
+    if (sizeArray.length > 0) {
+      urlParams.set('sizes', sizeArray.join(','));
+    } else {
+      urlParams.delete('sizes');
+    }
+  }
+  window.location.search = urlParams.toString();
+}
+
+function removeGenderFilter(gender) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const genders = urlParams.get('genders');
+  if (genders) {
+    const genderArray = genders.split(',').filter(g => g !== gender);
+    if (genderArray.length > 0) {
+      urlParams.set('genders', genderArray.join(','));
+    } else {
+      urlParams.delete('genders');
+    }
+  }
+  window.location.search = urlParams.toString();
 }
 
 // Mobile filter toggle
