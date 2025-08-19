@@ -89,7 +89,7 @@ include __DIR__ . '/partials/fooder.php';
 <script src="/NHOM4_DU_AN_1/public/assets/js/owl-carousel.js"></script>
 <script src="/NHOM4_DU_AN_1/public/assets/js/custom.js"></script>
 <script src="/NHOM4_DU_AN_1/public/assets/js/cart.js"></script>
-<script src="/NHOM4_DU_AN_1/public/assets/js/cart-selection-new.js"></script>
+<script src="/NHOM4_DU_AN_1/public/assets/js/cart-selection.js"></script>
 
 </body>
 </html> 

@@ -152,7 +152,7 @@ function timeAgo($datetime) {
                       <i class="fas fa-chart-line"></i>
                     </div>
                 <div class="stat-content">
-                  <h3 class="stat-number">$<?= number_format($monthlyRevenue, 2) ?></h3>
+                  <h3 class="stat-number"><?= number_format($monthlyRevenue, 0, ',', '.') ?>₫</h3>
                   <p class="stat-label">Doanh thu tháng</p>
                 </div>
               </div>

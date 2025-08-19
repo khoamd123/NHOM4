@@ -60,7 +60,17 @@
       <div class="col-lg-8">
         <div class="cart-items-container">
           <div class="cart-header">
-            <h4><i class="fas fa-shopping-cart"></i> Sản phẩm trong giỏ (<?= $cartCount ?> sản phẩm)</h4>
+            <div class="d-flex justify-content-between align-items-center">
+              <h4><i class="fas fa-shopping-cart"></i> Sản phẩm trong giỏ (<?= $cartCount ?> sản phẩm)</h4>
+              <div class="cart-actions">
+                <button class="btn btn-outline-primary btn-sm me-2" onclick="selectAllItems()">
+                  <i class="fas fa-check-double"></i> Chọn tất cả
+                </button>
+                <button class="btn btn-outline-secondary btn-sm" onclick="deselectAllItems()">
+                  <i class="fas fa-times"></i> Bỏ chọn tất cả
+                </button>
+              </div>
+            </div>
           </div>
           
           <?php foreach ($cartItems as $item): ?>

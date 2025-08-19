@@ -85,11 +85,23 @@
                         <!-- Order Items -->
                         <div class="order-items">
                             <h5><i class="fas fa-box"></i> Sản phẩm đã đặt</h5>
+                            
+
+                            
+
+                            
                             <div class="items-list">
                                 <?php foreach ($orderItems as $item): ?>
                                 <div class="order-item">
                                     <div class="item-image">
-                                        <img src="<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['product_name']) ?>">
+                                        <?php 
+                                        // Xử lý đường dẫn ảnh - sử dụng trực tiếp từ controller
+                                        $imageSrc = $item['image'] ?? '/NHOM4_DU_AN_1/public/assets/images/featured-01.png';
+                                        ?>
+
+                                        <img src="<?= htmlspecialchars($imageSrc) ?>" 
+                                             alt="<?= htmlspecialchars($item['product_name']) ?>"
+                                             onerror="this.src='/NHOM4_DU_AN_1/public/assets/images/featured-01.png'">
                                     </div>
                                     <div class="item-details">
                                         <h6><?= htmlspecialchars($item['product_name']) ?></h6>

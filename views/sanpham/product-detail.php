@@ -140,16 +140,16 @@ if (!empty($product['category_names'])) {
               
               <!-- Action Buttons -->
               <div class="action-buttons d-flex gap-2 mb-3">
-                <button class="btn btn-primary btn-lg add-to-cart-btn" disabled onclick="addToCartFromDetail()">
+                <button class="btn btn-primary btn-lg add-to-cart-btn" onclick="addToCartFromDetail()">
                   <i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng
                 </button>
-                <button class="btn btn-success btn-lg buy-now-btn" disabled onclick="buyNow()">
+                <button class="btn btn-success btn-lg buy-now-btn" onclick="buyNow()">
                   <i class="fa fa-bolt"></i> Mua ngay
                 </button>
               </div>
               
               <p class="text-muted">
-                <i class="fas fa-info-circle"></i> Vui lòng chọn size để tiếp tục
+                <i class="fas fa-info-circle"></i> Sẵn sàng mua hàng
               </p>
             </div>
           </div>
@@ -378,28 +378,7 @@ if (!empty($product['category_names'])) {
   font-size: 16px;
 }
 
-/* Force Buy Button Styles */
-.buy-now-btn {
-  background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important;
-  border-color: #28a745 !important;
-  color: white !important;
-  opacity: 1 !important;
-  cursor: pointer !important;
-  pointer-events: auto !important;
-}
 
-.buy-now-btn:hover {
-  background: linear-gradient(135deg, #218838 0%, #1e7e34 100%) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4) !important;
-}
-
-.buy-now-btn:disabled {
-  background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important;
-  opacity: 0.9 !important;
-  cursor: pointer !important;
-  pointer-events: auto !important;
-}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
@@ -429,19 +408,88 @@ function changeQuantity(change) {
 }
 
 function addToCartFromDetail() {
+  console.log('Add to cart button clicked!');
+  console.log('Selected variant ID:', selectedVariantId);
+  
+  // Nếu chưa chọn size, tự động chọn size đầu tiên
   if (!selectedVariantId) {
-    alert('Vui lòng chọn size và màu sắc');
-    return;
+    const firstVariant = document.querySelector('.btn-check');
+    if (firstVariant) {
+      selectedVariantId = firstVariant.value;
+      console.log('Auto-selected first variant for cart:', selectedVariantId);
+    } else {
+      alert('Không có size nào để chọn');
+      return;
+    }
   }
   
   const quantity = parseInt(document.getElementById('quantity').value);
-  addToCart(selectedVariantId, quantity);
+  console.log('Quantity:', quantity);
+  
+  // Kiểm tra xem function addToCart có tồn tại không
+  if (typeof addToCart === 'undefined') {
+    console.error('Function addToCart không tồn tại!');
+    alert('Lỗi: Function addToCart không tồn tại. Vui lòng kiểm tra file cart.js');
+    return;
+  }
+  
+  try {
+    console.log('Gọi function addToCart...');
+    addToCart(selectedVariantId, quantity);
+    console.log('Đã thêm vào giỏ hàng thành công!');
+    alert('Đã thêm sản phẩm vào giỏ hàng!');
+  } catch (error) {
+    console.error('Error in addToCartFromDetail:', error);
+    alert('Có lỗi xảy ra khi thêm vào giỏ hàng. Chi tiết: ' + error.message);
+  }
 }
 
 function buyNow() {
-  // Direct redirect to checkout - simplified
-  console.log('buyNow clicked - redirecting to checkout');
-  window.location.href = '/NHOM4_DU_AN_1/index.php?page=checkout';
+  console.log('Buy now button clicked!');
+  console.log('Selected variant ID:', selectedVariantId);
+  
+  // Nếu chưa chọn size, tự động chọn size đầu tiên
+  if (!selectedVariantId) {
+    const firstVariant = document.querySelector('.btn-check');
+    if (firstVariant) {
+      selectedVariantId = firstVariant.value;
+      console.log('Auto-selected first variant:', selectedVariantId);
+    } else {
+      alert('Không có size nào để chọn');
+      return;
+    }
+  }
+  
+  const quantity = parseInt(document.getElementById('quantity').value);
+  if (quantity < 1) {
+    alert('Số lượng không hợp lệ');
+    return;
+  }
+  
+  console.log('Buy now clicked - variant:', selectedVariantId, 'quantity:', quantity);
+  
+  // Kiểm tra xem function addToCart có tồn tại không
+  if (typeof addToCart === 'undefined') {
+    console.error('Function addToCart không tồn tại!');
+    alert('Lỗi: Function addToCart không tồn tại. Vui lòng kiểm tra file cart.js');
+    return;
+  }
+  
+  try {
+    console.log('Thêm sản phẩm vào giỏ hàng...');
+    // Thêm sản phẩm vào giỏ hàng
+    addToCart(selectedVariantId, quantity);
+    
+    console.log('Đã thêm vào giỏ hàng, chuyển đến checkout...');
+    // Chuyển đến trang checkout sau 1 giây
+    setTimeout(() => {
+      window.location.href = '/NHOM4_DU_AN_1/index.php?page=checkout';
+    }, 1000);
+    
+  } catch (error) {
+    console.error('Error in buyNow:', error);
+    alert('Có lỗi xảy ra, vui lòng thử lại. Chi tiết: ' + error.message);
+  }
 }
 
 // Update the selectVariant function for this page
@@ -458,55 +506,17 @@ function selectVariant(variantId, element) {
   // Update selected variant
   selectedVariantId = variantId;
   
-  // Enable both buttons
-  const addButton = document.querySelector('.add-to-cart-btn');
-  const buyButton = document.querySelector('.buy-now-btn');
-  
-  if (addButton) {
-    addButton.disabled = false;
-  }
-  if (buyButton) {
-    buyButton.disabled = false;
-  }
-  
+  // Cập nhật thông báo
   const infoText = document.querySelector('.text-muted');
   if (infoText) {
-    infoText.innerHTML = '<i class="fas fa-check-circle text-success"></i> Đã chọn size, có thể mua hàng';
+    infoText.innerHTML = '<i class="fas fa-check-circle text-success"></i> Đã chọn size ' + element.textContent.trim() + ', có thể mua hàng';
   }
+  
+  console.log('Selected variant:', variantId);
 }
 
 // Auto-select variant when radio is clicked
 document.addEventListener('DOMContentLoaded', function() {
-  // FORCE ENABLE BUTTONS IMMEDIATELY
-  setTimeout(function() {
-    const addButton = document.querySelector('.add-to-cart-btn');
-    const buyButton = document.querySelector('.buy-now-btn');
-    
-    console.log('Force enabling buttons...');
-    
-    if (addButton) {
-      addButton.disabled = false;
-      addButton.style.opacity = '1';
-      addButton.style.cursor = 'pointer';
-      console.log('Add button enabled');
-    }
-    
-    if (buyButton) {
-      buyButton.disabled = false;
-      buyButton.style.background = 'linear-gradient(135deg, #28a745 0%, #1e7e34 100%)';
-      buyButton.style.opacity = '1';
-      buyButton.style.cursor = 'pointer';
-      buyButton.style.color = 'white';
-      console.log('Buy button enabled and styled');
-    }
-    
-    // Remove warning message
-    const warningMsg = document.querySelector('.text-muted');
-    if (warningMsg && warningMsg.textContent.includes('Vui lòng chọn size')) {
-      warningMsg.innerHTML = '<i class="fas fa-info-circle text-info"></i> Sẵn sàng mua hàng';
-    }
-  }, 100);
-  
   document.querySelectorAll('.btn-check').forEach(radio => {
     radio.addEventListener('change', function() {
       if (this.checked) {
@@ -520,33 +530,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script src="/NHOM4_DU_AN_1/public/assets/js/cart.js"></script>
 
-<!-- EMERGENCY FIX: Force enable buy button -->
+<!-- Kiểm tra xem cart.js có được load thành công không -->
 <script>
-// Multiple attempts to ensure button works
-setTimeout(() => {
-  const buyBtn = document.querySelector('.buy-now-btn');
-  if (buyBtn) {
-    buyBtn.disabled = false;
-    buyBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #1e7e34 100%)';
-    buyBtn.style.color = 'white';
-    buyBtn.style.opacity = '1';
-    buyBtn.style.cursor = 'pointer';
-    buyBtn.onclick = function() {
-      console.log('Buy now clicked!');
-      alert('Chuyển đến trang thanh toán...');
-      window.location.href = '/NHOM4_DU_AN_1/index.php?page=checkout';
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('=== DEBUG: Kiểm tra file cart.js ===');
+  
+  // Kiểm tra function addToCart
+  if (typeof addToCart === 'undefined') {
+    console.error('❌ Function addToCart KHÔNG tồn tại!');
+    console.error('File cart.js có thể không được load thành công');
+    
+    // Tạo function addToCart đơn giản để test
+    window.addToCart = function(variantId, quantity) {
+      console.log('🔧 Using fallback addToCart function');
+      console.log('Variant ID:', variantId, 'Quantity:', quantity);
+      
+      // Hiển thị thông báo thành công
+      alert('Đã thêm sản phẩm vào giỏ hàng! (Fallback function)');
+      
+      // Cập nhật badge giỏ hàng nếu có
+      const badge = document.querySelector('.cart-badge, .cart-count');
+      if (badge) {
+        const currentCount = parseInt(badge.textContent) || 0;
+        badge.textContent = currentCount + quantity;
+      }
+      
+      return true;
     };
-    console.log('✅ EMERGENCY FIX: Buy button fully enabled!');
+    
+    console.log('✅ Fallback addToCart function created!');
+    
+    // Hiển thị cảnh báo trên trang
+    const warningDiv = document.createElement('div');
+    warningDiv.className = 'alert alert-warning';
+    warningDiv.innerHTML = '<strong>Chú ý:</strong> Sử dụng function fallback. File cart.js có thể không được load thành công.';
+    document.querySelector('.product-variants').prepend(warningDiv);
+  } else {
+    console.log('✅ Function addToCart đã được load thành công từ cart.js');
   }
-}, 500);
-
-// Force again after 1 second
-setTimeout(() => {
-  const buyBtn = document.querySelector('.buy-now-btn');
-  if (buyBtn && buyBtn.disabled) {
-    buyBtn.disabled = false;
-    buyBtn.style.background = '#28a745';
-    console.log('🔧 Second attempt: Buy button enabled');
-  }
-}, 1000);
-</script> 
+  
+  // Kiểm tra các function khác
+  console.log('addToCart type:', typeof addToCart);
+  console.log('removeFromCart type:', typeof removeFromCart);
+  console.log('updateCartBadge type:', typeof updateCartBadge);
+  
+  // Kiểm tra biến selectedVariantId
+  console.log('Initial selectedVariantId:', selectedVariantId);
+});
+</script>

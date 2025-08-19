@@ -77,6 +77,39 @@
   margin-bottom: 30px;
 }
 
+/* ==== CHECKBOX SELECTION STYLES ==== */
+.item-selection {
+  text-align: center;
+  padding: 10px 0;
+}
+
+.item-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #667eea;
+}
+
+.item-checkbox:checked {
+  background-color: #667eea;
+  border-color: #667eea;
+}
+
+.checkbox-label {
+  cursor: pointer;
+  margin-left: 5px;
+  user-select: none;
+}
+
+/* Toast notifications */
+.toast-container {
+  z-index: 9999;
+}
+
+.toast {
+  min-width: 300px;
+}
+
 .cart-header {
   background: #f8f9fa;
   padding: 20px 25px;

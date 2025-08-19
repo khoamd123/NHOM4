@@ -319,14 +319,40 @@ class CheckoutController {
     private function getOrderItems($orderId) {
         global $conn;
         $stmt = $conn->prepare("
-            SELECT oi.*, p.name as product_name, p.image, pv.size, pv.color 
+            SELECT oi.*, p.name as product_name, p.image, p.brand, pv.size, pv.color 
             FROM order_items oi 
             JOIN product_variants pv ON oi.variant_id = pv.id 
             JOIN products p ON pv.product_id = p.id 
             WHERE oi.order_id = ?
         ");
         $stmt->execute([$orderId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Xử lý đường dẫn ảnh cho từng item
+        foreach ($items as &$item) {
+            if (!empty($item['image'])) {
+                // Kiểm tra xem ảnh đã có đường dẫn đầy đủ chưa
+                if (strpos($item['image'], '/NHOM4_DU_AN_1/public/uploads/products/') === 0) {
+                    // Đã có đường dẫn đầy đủ, giữ nguyên
+                } elseif (strpos($item['image'], '/NHOM4_DU_AN_1/') === 0) {
+                    // Có đường dẫn gốc nhưng không đúng format, sửa lại
+                    $item['image'] = '/NHOM4_DU_AN_1/public/uploads/products/' . basename($item['image']);
+                } else {
+                    // Chỉ có tên file, thêm đường dẫn đầy đủ
+                    $item['image'] = '/NHOM4_DU_AN_1/public/uploads/products/' . $item['image'];
+                }
+                
+                // Kiểm tra và sửa đường dẫn bị duplicate
+                if (strpos($item['image'], '/NHOM4_DU_AN_1/public/uploads/products//NHOM4_DU_AN_1/') === 0) {
+                    $item['image'] = '/NHOM4_DU_AN_1/public/uploads/products/' . basename($item['image']);
+                }
+            } else {
+                // Ảnh mặc định
+                $item['image'] = '/NHOM4_DU_AN_1/public/assets/images/featured-01.png';
+            }
+        }
+        
+        return $items;
     }
 }
 
