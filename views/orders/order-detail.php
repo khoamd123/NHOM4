@@ -129,10 +129,16 @@
                                     <?php foreach ($orderItems as $item): ?>
                                     <tr>
                                         <td>
-                                            <img src="<?= htmlspecialchars($item['product_image'] ?? '/NHOM4_DU_AN_1/public/assets/images/featured-01.png') ?>" 
-                                                 alt="<?= htmlspecialchars($item['product_name']) ?>" 
-                                                 class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;"
-                                                 onerror="this.src='/NHOM4_DU_AN_1/public/assets/images/featured-01.png'">
+                                            <?php if (!empty($item['product_image'])): ?>
+                                                <img src="/NHOM4_DU_AN_1/public/uploads/products/<?= htmlspecialchars($item['product_image']) ?>" 
+                                                     alt="<?= htmlspecialchars($item['product_name']) ?>" 
+                                                     class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;"
+                                                     onerror="this.src='/NHOM4_DU_AN_1/public/assets/images/featured-01.png'">
+                                            <?php else: ?>
+                                                <img src="/NHOM4_DU_AN_1/public/assets/images/featured-01.png" 
+                                                     alt="<?= htmlspecialchars($item['product_name']) ?>" 
+                                                     class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                                            <?php endif; ?>
                                         </td>
                                         <td>
                                             <strong><?= htmlspecialchars($item['product_name']) ?></strong>

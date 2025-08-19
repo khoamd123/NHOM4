@@ -67,6 +67,8 @@ if (!isset($page)) {
         $cartItems = CartModel::getCartItems($userId);
         $cartTotal = CartModel::getCartTotal($userId);
         $cartCount = CartModel::getCartCount($userId);
+        $selectedTotal = CartModel::getSelectedCartTotal($userId);
+        $selectedCount = CartModel::getSelectedCartCount($userId);
         $invalidItems = CartModel::validateCartItems($userId);
         
         include __DIR__ . '/../cart/cart.php';
@@ -87,6 +89,7 @@ include __DIR__ . '/partials/fooder.php';
 <script src="/NHOM4_DU_AN_1/public/assets/js/owl-carousel.js"></script>
 <script src="/NHOM4_DU_AN_1/public/assets/js/custom.js"></script>
 <script src="/NHOM4_DU_AN_1/public/assets/js/cart.js"></script>
+<script src="/NHOM4_DU_AN_1/public/assets/js/cart-selection-new.js"></script>
 
 </body>
 </html> 

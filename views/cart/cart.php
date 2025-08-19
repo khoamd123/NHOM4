@@ -61,15 +61,23 @@
         <div class="cart-items-container">
           <div class="cart-header">
             <h4><i class="fas fa-shopping-cart"></i> Sản phẩm trong giỏ (<?= $cartCount ?> sản phẩm)</h4>
-            <button class="clear-all-btn" onclick="clearCart()">
-              <i class="fas fa-trash"></i> Xóa tất cả
-            </button>
           </div>
           
           <?php foreach ($cartItems as $item): ?>
           <div class="cart-item" data-variant-id="<?= $item['variant_id'] ?>">
             <div class="row align-items-center">
-              <div class="col-md-2">
+              <div class="col-md-1">
+                <div class="item-selection">
+                  <input type="checkbox" 
+                         class="item-checkbox" 
+                         id="item_<?= $item['variant_id'] ?>"
+                         data-variant-id="<?= $item['variant_id'] ?>"
+                         <?= ($item['is_selected'] ?? 1) ? 'checked' : '' ?>
+                         onchange="toggleItemSelection(<?= $item['variant_id'] ?>)">
+                  <label for="item_<?= $item['variant_id'] ?>" class="checkbox-label"></label>
+                </div>
+              </div>
+              <div class="col-md-1">
                 <div class="product-image">
                   <?php 
                   if (!empty($item['product_image'])) {
@@ -174,8 +182,12 @@
             </div>
             <div class="card-body">
               <div class="summary-row">
+                <span>Sản phẩm được chọn:</span>
+                <span class="selected-count"><?= $selectedCount ?> sản phẩm</span>
+              </div>
+              <div class="summary-row">
                 <span>Tạm tính:</span>
-                <span class="cart-subtotal"><?= number_format($cartTotal, 0, ',', '.') ?>₫</span>
+                <span class="cart-subtotal"><?= number_format($selectedTotal, 0, ',', '.') ?>₫</span>
               </div>
               <div class="summary-row">
                 <span>Phí vận chuyển:</span>
@@ -185,7 +197,7 @@
               <div class="summary-row total-row">
                 <strong>
                   <span>Tổng cộng:</span>
-                  <span class="cart-total"><?= number_format($cartTotal, 0, ',', '.') ?>₫</span>
+                  <span class="cart-total"><?= number_format($selectedTotal, 0, ',', '.') ?>₫</span>
                 </strong>
               </div>
               
@@ -193,9 +205,6 @@
                 <a href="/NHOM4_DU_AN_1/index.php?page=checkout" class="checkout-btn">
                   <i class="fas fa-credit-card"></i> Tiến hành thanh toán
                 </a>
-                <div class="security-note">
-                  <i class="fas fa-shield-alt"></i> Thanh toán an toàn và bảo mật
-                </div>
               </div>
             </div>
           </div>

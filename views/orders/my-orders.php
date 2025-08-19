@@ -521,110 +521,6 @@ body {
     }
 }
 
-/* Product Display Styles */
-.order-products {
-    margin: 20px 0;
-    padding: 20px;
-    background: rgba(116, 185, 255, 0.05);
-    border-radius: 12px;
-    border-left: 4px solid #74b9ff;
-}
-
-.products-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.product-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 10px;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(116, 185, 255, 0.2);
-}
-
-.product-item:hover {
-    background: rgba(255, 255, 255, 0.95);
-    transform: translateX(5px);
-    box-shadow: 0 4px 12px rgba(116, 185, 255, 0.15);
-}
-
-.product-image {
-    width: 60px;
-    height: 60px;
-    border-radius: 8px;
-    overflow: hidden;
-    flex-shrink: 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.product-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.product-item:hover .product-image img {
-    transform: scale(1.05);
-}
-
-.product-details {
-    flex: 1;
-    min-width: 0;
-}
-
-.product-name {
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 5px;
-    font-size: 0.95rem;
-    line-height: 1.3;
-}
-
-.product-specs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 5px;
-}
-
-.spec-item {
-    background: rgba(102, 126, 234, 0.1);
-    color: #667eea;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.product-price {
-    color: #e74c3c;
-    font-weight: 700;
-    font-size: 0.9rem;
-}
-
-@media (max-width: 768px) {
-    .product-item {
-        flex-direction: column;
-        text-align: center;
-        gap: 10px;
-    }
-    
-    .product-image {
-        width: 50px;
-        height: 50px;
-    }
-    
-    .product-specs {
-        justify-content: center;
-    }
-}
-
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
     .order-card {
@@ -652,15 +548,6 @@ body {
     
     .empty-orders p {
         color: #a0aec0;
-    }
-    
-    .product-item {
-        background: rgba(60, 70, 85, 0.8);
-        border-color: rgba(116, 185, 255, 0.3);
-    }
-    
-    .product-name {
-        color: #e2e8f0;
     }
 }
 </style>
@@ -724,63 +611,6 @@ body {
                             <div class="info-value"><?= $order['total_quantity'] ?> sản phẩm</div>
                         </div>
                     </div>
-
-                    <!-- Hiển thị sản phẩm đã đặt -->
-                    <?php 
-                    $orderItems = OrderModel::getOrderItems($order['id']);
-                    // Debug: log order items
-                    error_log("Order ID: " . $order['id'] . " - Items count: " . count($orderItems));
-                    if (!empty($orderItems)): 
-                    ?>
-                    <div class="order-products">
-                        <h6 style="color: #2c3e50; margin-bottom: 15px; font-weight: 600;">
-                            <i class="fas fa-shopping-bag"></i> Sản phẩm đã đặt:
-                        </h6>
-                        <div class="products-list">
-                            <?php foreach($orderItems as $item): ?>
-                            <?php 
-                            // Debug: log item data
-                            error_log("Product: " . $item['product_name'] . " - Image: " . ($item['product_image'] ?? 'NO IMAGE'));
-                            ?>
-                            <div class="product-item">
-                                <div class="product-image">
-                                    <?php
-                                    $imageSrc = $item['product_image'] ?? '';
-                                    // Nếu đường dẫn không bắt đầu bằng http hoặc /, thêm base path
-                                    if ($imageSrc && strpos($imageSrc, 'http') !== 0 && strpos($imageSrc, '/') !== 0) {
-                                        $imageSrc = '/NHOM4_DU_AN_1/public/uploads/products/' . $imageSrc;
-                                    }
-                                    // Fallback image
-                                    if (!$imageSrc) {
-                                        $imageSrc = '/NHOM4_DU_AN_1/public/assets/images/featured-01.png';
-                                    }
-                                    ?>
-                                    <img src="<?= htmlspecialchars($imageSrc) ?>" 
-                                         alt="<?= htmlspecialchars($item['product_name']) ?>"
-                                         style="border: 1px solid #ddd;"
-                                         onload="console.log('Image loaded: <?= addslashes($imageSrc) ?>')"
-                                         onerror="console.log('Image failed: <?= addslashes($imageSrc) ?>'); this.src='/NHOM4_DU_AN_1/public/assets/images/featured-01.png'">
-                                </div>
-                                <div class="product-details">
-                                    <div class="product-name"><?= htmlspecialchars($item['product_name']) ?></div>
-                                    <div class="product-specs">
-                                        <span class="spec-item">Size: <?= htmlspecialchars($item['size']) ?></span>
-                                        <span class="spec-item">Màu: <?= htmlspecialchars($item['color']) ?></span>
-                                        <span class="spec-item">SL: <?= $item['quantity'] ?></span>
-                                    </div>
-                                    <div class="product-price"><?= number_format($item['price']) ?>₫</div>
-                                </div>
-                            </div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                    <?php else: ?>
-                    <div class="order-products">
-                        <p style="color: #7f8c8d; font-style: italic;">
-                            <i class="fas fa-info-circle"></i> Không tìm thấy thông tin sản phẩm cho đơn hàng này.
-                        </p>
-                    </div>
-                    <?php endif; ?>
 
                     <?php if ($shippingInfo): ?>
                         <div class="shipping-info-card">

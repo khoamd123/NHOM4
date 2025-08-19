@@ -55,10 +55,10 @@ class CheckoutController {
         
         $userId = $this->checkLogin();
         
-        // Lấy thông tin giỏ hàng
-        $cartItems = CartModel::getCartItems($userId);
-        $cartTotal = CartModel::getCartTotal($userId);
-        $cartCount = CartModel::getCartCount($userId);
+        // Lấy thông tin giỏ hàng (chỉ những sản phẩm được chọn)
+        $cartItems = CartModel::getSelectedCartItems($userId);
+        $cartTotal = CartModel::getSelectedCartTotal($userId);
+        $cartCount = CartModel::getSelectedCartCount($userId);
         
         // Kiểm tra giỏ hàng trống
         if ($cartCount == 0) {
@@ -138,10 +138,10 @@ class CheckoutController {
                 exit;
             }
             
-            // Lấy giỏ hàng
-            $cartItems = CartModel::getCartItems($userId);
+            // Lấy giỏ hàng (chỉ những sản phẩm được chọn)
+            $cartItems = CartModel::getSelectedCartItems($userId);
             if (empty($cartItems)) {
-                throw new Exception('Giỏ hàng trống');
+                throw new Exception('Không có sản phẩm nào được chọn');
             }
             
             // Validate stock một lần nữa
@@ -151,7 +151,7 @@ class CheckoutController {
             }
             
             // Tính toán
-            $cartTotal = CartModel::getCartTotal($userId);
+            $cartTotal = CartModel::getSelectedCartTotal($userId);
             $shippingFee = $this->calculateShippingFee($cartTotal);
             $finalTotal = $cartTotal + $shippingFee;
             
@@ -187,8 +187,8 @@ class CheckoutController {
                 'payment_status' => $paymentMethod === 'cod' ? 'pending' : 'pending'
             ]);
             
-            // Xóa giỏ hàng
-            CartModel::clearCart($userId);
+            // Xóa những sản phẩm đã được chọn khỏi giỏ hàng
+            CartModel::removeSelectedItems($userId);
             
             $conn->commit();
             

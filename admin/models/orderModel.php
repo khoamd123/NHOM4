@@ -44,7 +44,7 @@ function getOrderItems($orderId) {
     global $conn;
     try {
         $stmt = $conn->prepare("
-            SELECT oi.*, p.name as product_name, pv.size, pv.color
+            SELECT oi.*, p.name as product_name, p.image as product_image, pv.size, pv.color
             FROM order_items oi
             JOIN product_variants pv ON oi.variant_id = pv.id
             JOIN products p ON pv.product_id = p.id
@@ -66,6 +66,18 @@ function updateOrderStatus($id, $status) {
         return $stmt->execute([$status, $id]);
     } catch (PDOException $e) {
         error_log("Error updating order status: " . $e->getMessage());
+        return false;
+    }
+}
+
+// Cập nhật trạng thái thanh toán
+function updateOrderPaymentStatus($id, $isPaid) {
+    global $conn;
+    try {
+        $stmt = $conn->prepare("UPDATE orders SET is_paid = ? WHERE id = ?");
+        return $stmt->execute([$isPaid ? 1 : 0, $id]);
+    } catch (PDOException $e) {
+        error_log("Error updating order payment status: " . $e->getMessage());
         return false;
     }
 }

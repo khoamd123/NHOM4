@@ -27,7 +27,7 @@ $currentAdmin = getCurrentAdmin();
     .status-shipped {
         background-color: #d1fae5;
         color: #065f46;
-        border: 2px solid #a7f3d0;
+        border: 1px solid #a7f3d0;
     }
     .status-delivered {
         background-color: #dcfce7;
@@ -38,6 +38,40 @@ $currentAdmin = getCurrentAdmin();
         background-color: #fee2e2;
         color: #991b1b;
         border: 2px solid #fecaca;
+    }
+    .status-confirmed {
+        background-color: #dbeafe;
+        color: #1e40af;
+        border: 2px solid #93c5fd;
+    }
+    
+    /* Status flow display */
+    .status-flow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 1rem 0;
+    }
+    .status-flow .badge {
+        font-size: 0.8rem;
+        padding: 0.5rem 0.75rem;
+    }
+    .status-flow .fas.fa-arrow-right {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    
+    /* Toast notification */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+    .toast {
+        min-width: 300px;
     }
     .order-detail-card {
         background: #fff;
@@ -145,6 +179,9 @@ $currentAdmin = getCurrentAdmin();
 
     <!-- Main Content -->
     <main class="main-content">
+        <!-- Toast Container -->
+        <div class="toast-container"></div>
+        
         <div class="container-fluid">
             <!-- Header -->
             <div class="row mb-4">
@@ -190,7 +227,7 @@ $currentAdmin = getCurrentAdmin();
                                             case 'pending': $statusText = 'Chờ xử lý'; break;
                                             case 'processing': $statusText = 'Đang xử lý'; break;
                                             case 'shipped': $statusText = 'Đã gửi'; break;
-                                            case 'delivered': $statusText = 'Đã giao'; break;
+                                            case 'delivered': $statusText = 'Đã giao hàng'; break;
                                             case 'cancelled': $statusText = 'Đã hủy'; break;
                                             default: $statusText = 'Không xác định';
                                         }
@@ -204,15 +241,29 @@ $currentAdmin = getCurrentAdmin();
                                     <div class="mb-3">
                                         <label class="fw-bold">Thanh toán:</label>
                                         <div class="mt-1">
-                                            <?php if ($order['is_paid']): ?>
-                                                <span class="badge bg-success fs-6">
-                                                    <i class="fas fa-check"></i> Đã thanh toán
-                                                </span>
-                                            <?php else: ?>
-                                                <span class="badge bg-warning fs-6">
-                                                    <i class="fas fa-clock"></i> Chưa thanh toán
-                                                </span>
-                                            <?php endif; ?>
+                                            <?php 
+                                            // Logic hiển thị trạng thái thanh toán
+                                            $paymentStatus = $order['is_paid'];
+                                            $paymentText = '';
+                                            $paymentClass = '';
+                                            
+                                            // Nếu đơn hàng đã giao hàng thì tự động coi như đã thanh toán
+                                            if ($order['status'] === 'delivered') {
+                                                $paymentStatus = true;
+                                                $paymentText = 'Đã thanh toán';
+                                                $paymentClass = 'bg-success';
+                                            } elseif ($paymentStatus) {
+                                                $paymentText = 'Đã thanh toán';
+                                                $paymentClass = 'bg-success';
+                                            } else {
+                                                $paymentText = 'Chưa thanh toán';
+                                                $paymentClass = 'bg-warning';
+                                            }
+                                            ?>
+                                            <span class="badge <?= $paymentClass ?> fs-6">
+                                                <i class="fas fa-<?= $paymentStatus ? 'check' : 'clock' ?>"></i> 
+                                                <?= $paymentText ?>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -252,9 +303,15 @@ $currentAdmin = getCurrentAdmin();
                                 <div class="product-item">
                                     <div class="row align-items-center">
                                         <div class="col-md-2">
-                                            <div class="product-image-placeholder">
-                                                <i class="fas fa-shoe-prints fa-2x text-muted"></i>
-                                            </div>
+                                            <?php if (!empty($item['product_image'])): ?>
+                                                <img src="/NHOM4_DU_AN_1/public/uploads/products/<?= htmlspecialchars($item['product_image']) ?>" 
+                                                     alt="<?= htmlspecialchars($item['product_name']) ?>" 
+                                                     class="product-image">
+                                            <?php else: ?>
+                                                <div class="product-image-placeholder">
+                                                    <i class="fas fa-shoe-prints fa-2x text-muted"></i>
+                                                </div>
+                                            <?php endif; ?>
                                         </div>
                                         <div class="col-md-6">
                                             <h6 class="mb-1"><?= htmlspecialchars($item['product_name']) ?></h6>
@@ -341,25 +398,60 @@ $currentAdmin = getCurrentAdmin();
                 <h5 class="modal-title">Cập nhật trạng thái đơn hàng #<?= $order['id'] ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form method="post" action="/NHOM4_DU_AN_1/admin/index.php?action=orders">
-                <div class="modal-body">
-                    <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
+            <div class="modal-body">
+                <form id="statusUpdateForm">
+                    <input type="hidden" id="orderId" name="order_id" value="<?= $order['id'] ?>">
                     <div class="mb-3">
-                        <label for="status" class="form-label">Trạng thái mới:</label>
-                        <select name="status" class="form-control" required>
-                            <option value="pending" <?= $order['status'] == 'pending' ? 'selected' : '' ?>>Chờ xử lý</option>
-                            <option value="processing" <?= $order['status'] == 'processing' ? 'selected' : '' ?>>Đang xử lý</option>
-                            <option value="shipped" <?= $order['status'] == 'shipped' ? 'selected' : '' ?>>Đã gửi</option>
-                            <option value="delivered" <?= $order['status'] == 'delivered' ? 'selected' : '' ?>>Đã giao</option>
-                            <option value="cancelled" <?= $order['status'] == 'cancelled' ? 'selected' : '' ?>>Đã hủy</option>
+                        <label for="newStatus" class="form-label">Trạng thái mới:</label>
+                        <select name="status" id="newStatus" class="form-control" required>
+                            <option value="">Chọn trạng thái...</option>
                         </select>
+                        <div class="form-text">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle"></i> 
+                                Chỉ có thể chuyển đổi trạng thái theo quy trình logic
+                            </small>
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" name="update_status" class="btn btn-primary">Cập nhật</button>
-                </div>
-            </form>
+                    
+                    <!-- Quy tắc chuyển đổi trạng thái -->
+                    <div class="alert alert-info">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-route"></i> Quy trình chuyển đổi trạng thái:
+                        </h6>
+                        <div class="status-flow">
+                            <span class="badge bg-warning">Chờ xử lý</span>
+                            <i class="fas fa-arrow-right mx-2"></i>
+                            <span class="badge bg-primary">Đang xử lý</span>
+                            <i class="fas fa-arrow-right mx-2"></i>
+                            <span class="badge bg-info">Đã gửi</span>
+                            <i class="fas fa-arrow-right mx-2"></i>
+                            <span class="badge bg-success">Đã giao hàng</span>
+                        </div>
+                        <div class="mt-2">
+                            <small>
+                                <i class="fas fa-exclamation-triangle text-warning"></i>
+                                <strong>Quy tắc:</strong> Chỉ có thể tiến tới bước tiếp theo, không thể lùi hoặc nhảy cóc
+                            </small>
+                        </div>
+                        <div class="mt-1">
+                            <small>
+                                <i class="fas fa-info-circle text-info"></i>
+                                Có thể hủy đơn hàng ở bất kỳ bước nào trước "Đã giao hàng"
+                            </small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" id="updateStatusBtn" class="btn btn-primary">
+                    <span class="btn-text">Cập nhật</span>
+                    <span class="btn-loading d-none">
+                        <i class="fas fa-spinner fa-spin"></i> Đang cập nhật...
+                    </span>
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -373,7 +465,196 @@ $currentAdmin = getCurrentAdmin();
 $(document).ready(function() {
     // Xử lý modal
     $('.modal').on('show.bs.modal', function (e) {
-        // Đảm bảo modal hiển thị đúng
+        if (e.target.id === 'updateStatusModal') {
+            // Cập nhật danh sách trạng thái có thể chuyển đổi
+            updateAvailableStatuses('<?= $order['status'] ?>');
+        }
+    });
+    
+    // Xử lý cập nhật trạng thái
+    $('#updateStatusBtn').on('click', function() {
+        updateOrderStatus();
+    });
+    
+    // Xử lý khi nhấn Enter trong form
+    $('#newStatus').on('keypress', function(e) {
+        if (e.which === 13) {
+            updateOrderStatus();
+        }
     });
 });
+
+// Cập nhật danh sách trạng thái có thể chuyển đổi
+function updateAvailableStatuses(currentStatus) {
+    console.log('updateAvailableStatuses called with:', currentStatus);
+    
+    const statusSelect = $('#newStatus');
+    const availableStatuses = getAvailableStatuses(currentStatus);
+    
+    console.log('Available statuses:', availableStatuses);
+    
+    // Xóa tất cả options cũ
+    statusSelect.empty();
+    
+    // Thêm option mặc định
+    statusSelect.append('<option value="">Chọn trạng thái...</option>');
+    
+    // Thêm options mới theo quy tắc logic
+    availableStatuses.forEach(status => {
+        statusSelect.append(`<option value="${status.value}">${status.text}</option>`);
+    });
+    
+    // Chọn trạng thái hiện tại
+    statusSelect.val(currentStatus);
+    
+    // Disable select nếu chỉ có 1 option (không thể thay đổi)
+    if (availableStatuses.length === 1) {
+        statusSelect.prop('disabled', true);
+        $('#updateStatusBtn').prop('disabled', true).text('Không thể thay đổi');
+    } else {
+        statusSelect.prop('disabled', false);
+        $('#updateStatusBtn').prop('disabled', false).html('<span class="btn-text">Cập nhật</span>');
+    }
+}
+
+// Lấy danh sách trạng thái có thể chuyển đổi từ trạng thái hiện tại
+function getAvailableStatuses(currentStatus) {
+    const statusRules = {
+        'pending': [
+            { value: 'pending', text: 'Chờ xử lý (giữ nguyên)' },
+            { value: 'processing', text: 'Đang xử lý' },
+            { value: 'cancelled', text: 'Đã hủy' }
+        ],
+        'processing': [
+            { value: 'processing', text: 'Đang xử lý (giữ nguyên)' },
+            { value: 'shipped', text: 'Đã gửi' },
+            { value: 'cancelled', text: 'Đã hủy' }
+        ],
+        'shipped': [
+            { value: 'shipped', text: 'Đã gửi (giữ nguyên)' },
+            { value: 'delivered', text: 'Đã giao hàng' },
+            { value: 'cancelled', text: 'Đã hủy' }
+        ],
+        'delivered': [
+            { value: 'delivered', text: 'Đã giao hàng (giữ nguyên)' }
+            // Không thể thay đổi từ "Đã giao hàng"
+        ],
+        'cancelled': [
+            { value: 'cancelled', text: 'Đã hủy (giữ nguyên)' }
+            // Không thể thay đổi từ "Đã hủy"
+        ],
+        // Xử lý trường hợp trạng thái không xác định
+        'undefined': [
+            { value: 'pending', text: 'Chờ xử lý' },
+            { value: 'processing', text: 'Đang xử lý' },
+            { value: 'shipped', text: 'Đã gửi' },
+            { value: 'delivered', text: 'Đã giao hàng' },
+            { value: 'cancelled', text: 'Đã hủy' }
+        ],
+        'null': [
+            { value: 'pending', text: 'Chờ xử lý' },
+            { value: 'processing', text: 'Đang xử lý' },
+            { value: 'shipped', text: 'Đã gửi' },
+            { value: 'delivered', text: 'Đã giao hàng' },
+            { value: 'cancelled', text: 'Đã hủy' }
+        ]
+    };
+    
+    // Nếu trạng thái không xác định hoặc null, trả về tất cả options
+    if (!currentStatus || currentStatus === 'undefined' || currentStatus === 'null' || currentStatus === '') {
+        return statusRules['undefined'];
+    }
+    
+    return statusRules[currentStatus] || statusRules['pending'];
+}
+
+// Cập nhật trạng thái đơn hàng
+function updateOrderStatus() {
+    const orderId = $('#orderId').val();
+    const newStatus = $('#newStatus').val();
+    
+    if (!orderId || !newStatus) {
+        showToast('Vui lòng chọn trạng thái mới', 'error');
+        return;
+    }
+    
+    // Hiển thị loading state
+    const btn = $('#updateStatusBtn');
+    btn.prop('disabled', true);
+    btn.find('.btn-text').addClass('d-none');
+    btn.find('.btn-loading').removeClass('d-none');
+    
+    // Gửi AJAX request
+    $.ajax({
+        url: '/NHOM4_DU_AN_1/admin/controllers/orderController.php',
+        type: 'POST',
+        data: {
+            update_status: 1,
+            order_id: orderId,
+            status: newStatus
+        },
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                // Hiển thị thông báo thành công
+                showToast('Cập nhật trạng thái thành công!', 'success');
+                
+                // Đóng modal
+                bootstrap.Modal.getInstance(document.getElementById('updateStatusModal')).hide();
+                
+                // Reload trang để cập nhật trạng thái hiển thị và thanh toán
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                showToast('Có lỗi xảy ra: ' + (response.message || 'Không thể cập nhật trạng thái'), 'error');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error:', error);
+            showToast('Có lỗi xảy ra khi kết nối server', 'error');
+        },
+        complete: function() {
+            // Khôi phục button state
+            const btn = $('#updateStatusBtn');
+            btn.prop('disabled', false);
+            btn.find('.btn-text').removeClass('d-none');
+            btn.find('.btn-loading').addClass('d-none');
+        }
+    });
+}
+
+// Hiển thị toast notification
+function showToast(message, type = 'info') {
+    const toastId = 'toast-' + Date.now();
+    const bgClass = type === 'success' ? 'bg-success' : type === 'error' ? 'bg-danger' : 'bg-info';
+    const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+    
+    const toastHtml = `
+        <div class="toast show" id="${toastId}" role="alert">
+            <div class="toast-header ${bgClass} text-white">
+                <i class="fas ${icon} me-2"></i>
+                <strong class="me-auto">Thông báo</strong>
+                <button type="button" class="btn-close btn-close-white" onclick="removeToast('${toastId}')"></button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        </div>
+    `;
+    
+    $('.toast-container').append(toastHtml);
+    
+    // Tự động ẩn sau 5 giây
+    setTimeout(() => {
+        removeToast(toastId);
+    }, 5000);
+}
+
+// Xóa toast
+function removeToast(toastId) {
+    $(`#${toastId}`).fadeOut(300, function() {
+        $(this).remove();
+    });
+}
 </script> 

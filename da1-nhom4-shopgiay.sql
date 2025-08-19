@@ -46,7 +46,8 @@ CREATE TABLE `cart` (
   `id` int NOT NULL,
   `user_id` int DEFAULT NULL,
   `variant_id` int DEFAULT NULL,
-  `quantity` int DEFAULT NULL
+  `quantity` int DEFAULT NULL,
+  `is_selected` tinyint(1) DEFAULT '1' COMMENT '1: được chọn, 0: không được chọn'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
